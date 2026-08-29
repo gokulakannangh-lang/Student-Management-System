@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Add Teacher</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+    const role = localStorage.getItem("role");
+
+    if (role !== "admin") {
+        alert("Admin Access Only");
+
+        window.location.href = "dashboard.html";
+    }
+</script>
+
+</head>
+
+<body>
+
+    <h1 align="center">
+        Student Management System
+    </h1>
+
+    <hr>
+
+    <div class="container">
+
+        <center>
+            <h2>👨‍🏫 Add Teacher</h2>
+        </center>
+
+
+        <!-- Username -->
+
+        <label>Username</label>
+        <br>
+
+        <input
+            type="text"
+            id="teacherUsername"
+            maxlength="20"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- Password -->
+
+        <label>Password</label>
+        <br>
+
+        <input
+            type="password"
+            id="teacherPassword"
+            maxlength="8"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- Name -->
+
+        <label>Teacher Name</label>
+        <br>
+
+        <input
+            type="text"
+            id="teacherName"
+            maxlength="25"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- Department -->
+
+        <label>Department</label>
+        <br>
+
+        <select id="teacherDepartment">
+
+            <option value="">
+                Select Department
+            </option>
+
+            <option>B.Sc Computer Science</option>
+            <option>B.Sc Mathematics</option>
+            <option>B.Sc Physics</option>
+            <option>B.Sc Chemistry</option>
+            <option>B.A English</option>
+            <option>B.A Tamil</option>
+            <option>B.Com</option>
+            <option>B.B.A</option>
+            <option>B.C.A</option>
+            <option>B.Sc Botany</option>
+
+        </select>
+
+        <br><br>
+
+
+        <!-- Year -->
+
+        <label>Year</label>
+        <br>
+
+        <select id="teacherYear">
+
+            <option value="">
+                Select Year
+            </option>
+
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+
+        </select>
+
+        <br><br>
+
+
+        <!-- College Shift -->
+
+        <label>College Shift</label>
+        <br>
+
+        <select id="teacherShift">
+
+            <option value="">
+                Select Shift
+            </option>
+
+            <option>Shift 1</option>
+            <option>Shift 2</option>
+
+        </select>
+
+        <br><br>
+
+
+        <center>
+
+            <button
+                class="btn"
+                onclick="addTeacher()"
+            >
+                ➕ Add Teacher
+            </button>
+
+        </center>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

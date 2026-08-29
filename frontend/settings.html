@@ -1,0 +1,42 @@
+<h1>Settings</h1>
+
+<label>College Name</label>
+<input type="text" id="college_name">
+
+<br><br>
+
+<label>College Logo</label>
+
+<input type="file" id="logo">
+
+<button onclick="uploadLogo()">
+    Upload Logo
+</button>
+
+<br><br>
+
+<img id="logoPreview"
+     src=""
+     width="120"
+     height="120"
+     style="border:1px solid black;">
+
+<br><br>
+
+<label>Address</label>
+<textarea id="college_address"></textarea>
+
+<label>Phone</label>
+<input type="text" id="college_phone">
+
+<label>Email</label>
+<input type="email" id="college_email">
+
+<label>Principal Name</label>
+<input type="text" id="principal_name">
+
+<br><br>
+
+<button onclick="saveSettings()">
+    Save Settings
+</button>

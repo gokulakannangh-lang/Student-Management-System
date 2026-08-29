@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Management System</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            🎓
+
+            <h2>
+                Student<br>
+                Management
+            </h2>
+
+        </div>
+
+
+        <nav>
+
+            <!-- Dashboard -->
+            <a href="dashboard.html"
+               class="menu active">
+
+                🏠 Dashboard
+
+            </a>
+
+
+            <!-- Admin + Teacher -->
+            <a href="records.html"
+               class="menu admin teacher">
+
+                👨‍🎓 Students
+
+            </a>
+
+            <!-- Admin + Teacher -->
+            <a href="Attendance_records.html"
+               class="menu admin teacher">
+
+                📅 Attendance
+
+            </a>
+
+            <!-- Admin + Teacher -->
+            <a href="marks.html"
+               class="menu admin teacher">
+
+                📝 Marks
+
+            </a>
+
+
+            <!-- Admin + Teacher -->
+            <a href="fees.html"
+               class="menu admin teacher">
+
+                💰 Fees
+
+            </a>
+
+
+            <!-- Admin + Teacher -->
+            <a href="advance.html"
+               class="menu admin teacher">
+
+                💳 Advance
+
+            </a>
+
+
+            <!-- Admin + Teacher -->
+            <a href="result.html"
+               class="menu admin teacher">
+
+                📊 Result
+
+            </a>
+
+
+            <!-- Student ONLY -->
+            <a href="result.html"
+               class="menu student">
+
+                📊 My Result
+
+            </a>
+
+
+            <!-- Admin + Teacher -->
+            <a href="profile.html"
+               class="menu admin teacher">
+
+                👤 Profile
+
+            </a>
+
+
+
+
+
+            <!-- Admin ONLY -->
+            <a href="settings.html"
+               class="menu admin">
+
+                ⚙️ Settings
+
+            </a>
+
+        </nav>
+
+
+        <!-- Logout -->
+
+        <button class="logout"
+                onclick="logout()">
+
+            🚪 Logout
+
+        </button>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p id="welcomeText">
+                    Welcome 👋
+                </p>
+
+            </div>
+
+
+            <div class="user">
+
+                👤
+
+                <span id="userRole">
+                    User
+                </span>
+
+            </div>
+
+            <button 
+                   class="admin teacher"
+            onclick="window.location.href='student-register.html'">
+               👩🏼‍🎓 Register Student Result
+        </button>
+                    
+             <button 
+              class="admin"
+             onclick="window.location.href='add-teacher.html'">
+               👨‍🏫 Add Teacher
+               </button>
+
+        </header>
+
+
+
+        <!-- =========================
+             ADMIN + TEACHER CARDS
+        ========================== -->
+
+        <section class="cards admin teacher">
+
+
+            <!-- Total Students -->
+
+            <div class="card">
+
+                <div class="icon">
+                    👨‍🎓
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Students
+                    </h3>
+
+                    <h2 id="totalStudents">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- Departments -->
+
+            <div class="card">
+
+                <div class="icon">
+                    🏫
+                </div>
+
+                <div>
+
+                    <h3>
+                        Departments
+                    </h3>
+
+                    <h2 id="totalDepartments">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- Attendance -->
+
+            <div class="card">
+
+                <div class="icon">
+                    📅
+                </div>
+
+                <div>
+
+                    <h3>
+                        Attendance
+                    </h3>
+
+                    <h2 id="attendancePercentage">
+                        0%
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- Marks -->
+
+            <div class="card">
+
+                <div class="icon">
+                    📝
+                </div>
+
+                <div>
+
+                    <h3>
+                        Marks Records
+                    </h3>
+
+                    <h2 id="totalMarks">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </section>
+         <!-- =========================
+             QUICK ACTIONS
+             ADMIN + TEACHER
+        ========================== -->
+
+        <section class="quick admin teacher">
+
+            <!-- ==========================================
+     YEAR WISE STUDENTS
+========================================== -->
+
+<section class="year-section admin teacher">
+
+    <h2>Year Wise Students</h2>
+
+    <div class="year-cards">
+
+        <div class="year-card">
+            <h2 id="firstYearCount">0</h2>
+            <p>1st Year</p>
+        </div>
+
+        <div class="year-card">
+            <h2 id="secondYearCount">0</h2>
+            <p>2nd Year</p>
+        </div>
+
+        <div class="year-card">
+            <h2 id="thirdYearCount">0</h2>
+            <p>3rd Year</p>
+        </div>
+
+        <div class="year-card">
+            <h2 id="fourthYearCount">0</h2>
+            <p>4th Year</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     DEPARTMENT WISE STUDENTS
+========================================== -->
+
+<section class="department-section admin teacher">
+
+    <h2>Department Wise Students</h2>
+
+    <div class="chart-container">
+
+        <canvas id="departmentChart"></canvas>
+
+    </div>
+
+</section>
+
+
+            <h2>
+                Quick Actions
+            </h2>
+
+
+            <div class="quick-buttons">
+
+
+                <button onclick="location.href='index.html'">
+
+                    ➕ Add Student
+
+                </button>
+
+
+                <button onclick="location.href='Attendance.html'">
+
+                    📅 Take Attendance
+
+                </button>
+
+
+                <button onclick="location.href='Marks.html'">
+
+                    📝 Enter Marks
+
+                </button>
+
+
+                <button onclick="location.href='fees.html'">
+
+                    💰 Manage Fees
+
+                </button>
+
+
+                <button onclick="location.href='advance.html'">
+
+                    💳 Advance Payment
+
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>

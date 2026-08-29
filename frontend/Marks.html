@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Marks Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1 align="center">Student Marks</h1>
+
+<select id="marksDepartmentFilter"
+        onchange="filterMarksByDepartment()">
+    <option value="">All Departments</option>
+    <option value="B.Sc Computer Science">B.Sc Computer Science</option>
+    <option value="B.Sc Mathematics">B.Sc Mathematics</option>
+    <option value="B.Com">B.Com</option>
+</select>
+
+<br><br>
+
+<select id="student"></select><br><br>
+
+<input type="text" id="paper_code" placeholder="Paper Code"><br><br>
+
+
+<input type="text" id="subject" placeholder="Subject"><br><br>
+
+<input type="number" id="internal" placeholder="Internal Marks"><br><br>
+
+<input type="number" id="external" placeholder="External Marks"><br><br>
+
+<select id="semester">
+<option>Semester 1</option>
+<option>Semester 2</option>
+<option>Semester 3</option>
+<option>Semester 4</option>
+<option>Semester 5</option>
+<option>Semester 6</option>
+</select>
+ 
+<br><br>
+
+<button onclick="saveMarks()">Save Marks</button>
+
+<hr>
+
+<table border="1" width="100%">
+<thead>
+<tr>
+    <th>ID</th>
+    <th>Reg No</th>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Paper Code</th>
+    <th>Semester</th>
+    <th>Subject</th>
+    <th>Internal</th>
+    <th>External</th>
+    <th>Total</th>
+    <th>Grade</th>
+    <th>Action</th>
+</tr>
+</thead>
+<tbody id="marksTable"></tbody>
+
+</table>
+
+<script src="script.js"></script>
+
+</body>
+</html>

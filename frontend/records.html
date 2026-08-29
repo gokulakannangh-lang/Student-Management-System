@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+
+if(localStorage.getItem("login") !== "true"){
+    window.location.href="login.html";
+}
+
+</script>
+
+</head>
+<body>
+
+<h1 align="center">Student Records</h1>
+
+<div class="search-box">
+    <input type="search" id="search" placeholder="Search Student">
+    <button onclick="searchStudent()">Search</button>
+      
+      <select id="departmentFilter" onchange="filterStudentsByDepartment()">
+        <option value="">All Departments</option>
+        <option value="B.Sc Computer Science">B.Sc Computer Science</option>
+        <option value="B.Sc Mathematics">B.Sc Mathematics</option>
+        <option value="B.Com">B.Com</option>
+    </select>
+
+    <button onclick="window.location.href='index.html'">
+        Back
+    </button>
+
+    <button onclick="logout()">
+        Logout
+    </button>
+
+    
+</div>
+
+<hr>
+
+<table border="1" width="100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Register No</th>
+            <th>Gender</th>
+            <th>Date of Birth</th>
+            <th>Blood Group</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Parent Name</th>
+            <th>Parent Phone</th>
+            <th>Batch</th>
+            <th>College Shift</th>
+            <th>Admission Date</th>
+            <th>Profile</th>
+            <th>Photo</th>
+   </tr>
+            
+    </thead>
+
+    <tbody id="studentTable">
+    </tbody>
+</table>
+
+<!-- Photo Popup -->
+<div id="photoModal" class="modal" onclick="closePhoto()">
+    <span class="close">&times;</span>
+    <img id="popupPhoto" class="modal-content">
+</div>
+
+<input
+    type="file"
+    id="photo"
+    accept="image/*"
+    style="display:none;">
+
+<script src="script.js"></script>
+
+</body>
+</html>

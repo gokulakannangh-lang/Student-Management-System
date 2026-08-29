@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Management</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("login") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
+
+</head>
+<body>
+
+<h1 align="center">Attendance Management</h1>
+
+<div align="center">
+
+<input type="date" id="attendanceDate">
+
+
+
+<select id="attendanceDepartmentFilter"
+        onchange="filterAttendanceByDepartment()">
+    <option value="">All Departments</option>
+    <option value="B.Sc Computer Science">B.Sc Computer Science</option>
+    <option value="B.Sc Mathematics">B.Sc Mathematics</option>
+    <option value="B.Com">B.Com</option>
+</select>
+
+<button onclick="loadAttendance()">
+Load Students
+</button>
+
+<input
+type="text"
+id="searchAttendance"
+placeholder="Search Student..."
+onkeyup="searchAttendance()">
+
+<button onclick="window.location.href='index.html'">
+Dashboard
+</button>
+
+</div>
+
+<br>
+
+<table border="1" width="100%" id="attendanceTable">
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Register No</th>
+<th>Department</th>
+<th>Year</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="attendanceBody">
+
+</tbody>
+
+</table>
+
+<script src="script.js"></script>
+
+</body>
+</html>

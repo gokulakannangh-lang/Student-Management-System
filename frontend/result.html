@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Student Result</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<h1 align="center">
+    Student Result
+</h1>
+
+<!-- ================================= -->
+<!-- Semester -->
+<!-- ================================= -->
+
+<select id="semester">
+
+    <option value="">
+        Select Semester
+    </option>
+
+    <option>
+        Semester 1
+    </option>
+
+    <option>
+        Semester 2
+    </option>
+
+    <option>
+        Semester 3
+    </option>
+
+    <option>
+        Semester 4
+    </option>
+
+    <option>
+        Semester 5
+    </option>
+
+    <option>
+        Semester 6
+    </option>
+
+</select>
+
+
+<br><br>
+
+
+<button onclick="loadResult()">
+    Show Result
+</button>
+
+
+<button onclick="window.print()">
+    🖨 Print
+</button>
+
+
+<br><br>
+
+
+<center>
+
+    <div class="result-header">
+
+        <h2>
+            GOVT ARTS AND SCIENCE COLLEGE ERIYUR,DHARMAPURI
+        </h2>
+
+        <h3>
+            STUDENT SEMESTER RESULT, 2026-2027
+        </h3>
+
+         <p id="resultStudent"></p>
+
+        <p id="resultRegNo"></p>
+
+        <p id="resultDepartment"></p>
+
+    
+    </div>
+
+</center>
+
+
+<hr>
+
+
+<table border="1" width="100%">
+
+    <thead>
+
+        <tr>
+
+            <th>S.No</th>
+
+            <th>Paper Code</th>
+
+            <th>Subject</th>
+
+            <th>Internal Mark</th>
+
+            <th>External Mark</th>
+
+            <th>Total</th>
+
+            <th>Grade</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody id="resultTable">
+
+    </tbody>
+
+
+</table>
+
+
+<h3 id="grandTotal"></h3>
+
+<h3 id="average"></h3>
+
+<h3 id="resultStatus"></h3>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>

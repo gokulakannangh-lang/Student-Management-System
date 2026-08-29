@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Records</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("login") !== "true"){
+    window.location.href="login.html";
+}
+</script>
+
+</head>
+<body>
+
+<h1 align="center">Attendance Records</h1>
+
+<div align="center">
+
+<input
+type="date"
+id="searchDate"
+onchange="loadAttendanceRecords()">
+
+<input
+type="text"
+id="searchStudent"
+placeholder="Search Student..."
+onkeyup="searchAttendanceRecords()">
+
+<button onclick="window.location.href='attendance.html'">
+Back
+</button>
+
+</div>
+
+<br>
+
+<table border="1" width="100%">
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Register No</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="attendanceRecordTable">
+
+</tbody>
+
+</table>
+
+<script src="script.js"></script>
+
+</body>
+</html>

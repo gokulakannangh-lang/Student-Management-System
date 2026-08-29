@@ -1,0 +1,732 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #172554;
+    color: white;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 25px;
+}
+
+.logo h2 {
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.menu {
+    text-decoration: none;
+    color: #dbeafe;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.menu:hover,
+.menu.active {
+    background: #2563eb;
+    color: white;
+}
+
+.logout {
+    margin-top: auto;
+    border: none;
+    background: #dc2626;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.logout:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    margin-left: 240px;
+    padding: 25px 30px;
+}
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.topbar p {
+    color: #64748b;
+}
+
+.user {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.cards .card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+    background: #eff6ff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+.card h3 {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.card h2 {
+    font-size: 25px;
+    color: #172554;
+}
+
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick {
+    margin-top: 30px;
+}
+
+.quick h2,
+.student-dashboard h2 {
+    margin-bottom: 15px;
+}
+
+.quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.quick-buttons button,
+.student-cards button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.quick-buttons button:hover,
+.student-cards button:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================
+   STUDENT DASHBOARD
+========================= */
+
+.student-dashboard {
+    margin-top: 20px;
+}
+
+.student-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.student-cards .card {
+    text-align: center;
+}
+
+.student-cards .icon {
+    margin: auto;
+    margin-bottom: 12px;
+}
+
+.student-cards p {
+    color: #64748b;
+    margin: 10px 0 15px;
+}
+
+
+/* =========================
+   ROLE VISIBILITY
+========================= */
+
+.student {
+    display: none;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        width: 200px;
+    }
+
+    .main {
+        margin-left: 200px;
+        padding: 15px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .student-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .logout {
+        margin-top: 20px;
+    }
+
+}
+/* =====================================
+   RESPONSIVE DESIGN
+   Mobile / Tablet / Laptop / Desktop
+===================================== */
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+
+    .main {
+        padding: 30px 40px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+
+/* Laptop */
+@media (max-width: 1200px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .main {
+        margin-left: 220px;
+        padding: 22px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* Tablet */
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 190px;
+        padding: 15px 10px;
+    }
+
+    .logo h2 {
+        font-size: 15px;
+    }
+
+    .menu {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .main {
+        margin-left: 190px;
+        padding: 18px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .student-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+
+/* Small Tablet / Large Mobile */
+@media (max-width: 700px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Sidebar becomes top navigation */
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 12px;
+    }
+
+    .logo {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    nav {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+        padding-bottom: 5px;
+    }
+
+    nav::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .menu {
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding: 10px 13px;
+    }
+
+    .logout {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .topbar {
+        padding: 18px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+    .cards .card {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .student-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .quick-buttons button {
+        width: 100%;
+    }
+}
+
+
+/* Mobile */
+@media (max-width: 480px) {
+
+    .sidebar {
+        padding: 10px;
+    }
+
+    .logo h2 {
+        font-size: 16px;
+    }
+
+    .logo {
+        margin-bottom: 8px;
+    }
+
+    nav {
+        gap: 5px;
+    }
+
+    .menu {
+        font-size: 13px;
+        padding: 9px 11px;
+    }
+
+    .main {
+        padding: 10px;
+    }
+
+    .topbar {
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+
+    .topbar p {
+        font-size: 13px;
+    }
+
+    .user {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* Cards one by one */
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .cards .card {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .card h2 {
+        font-size: 22px;
+    }
+
+    .card h3 {
+        font-size: 13px;
+    }
+
+    .icon {
+        width: 45px;
+        height: 45px;
+        font-size: 21px;
+    }
+
+    .quick {
+        margin-top: 20px;
+    }
+
+    .quick h2,
+    .student-dashboard h2 {
+        font-size: 19px;
+    }
+
+    .quick-buttons {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .quick-buttons button {
+        padding: 12px;
+    }
+}
+
+
+/* Very Small Mobile */
+@media (max-width: 360px) {
+
+    .logo h2 {
+        font-size: 14px;
+    }
+
+    .menu {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .topbar h1 {
+        font-size: 19px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    .card h2 {
+        font-size: 20px;
+    }
+
+}
+/* ==========================================
+   YEAR WISE STUDENTS
+========================================== */
+
+.year-section {
+    margin-top: 30px;
+}
+
+.year-section h2,
+.department-section h2 {
+    margin-bottom: 20px;
+}
+
+
+.year-cards {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+
+}
+
+
+.year-card {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+
+    border-top:
+        4px solid #2563eb;
+
+}
+
+
+.year-card h2 {
+
+    font-size: 36px;
+
+    margin: 0;
+
+    color: #2563eb;
+
+}
+
+
+.year-card p {
+
+    margin-top: 8px;
+
+    font-size: 16px;
+
+    color: #555;
+
+}
+
+
+/* ==========================================
+   DEPARTMENT CHART
+========================================== */
+
+.department-section {
+
+    margin-top: 30px;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+
+}
+
+
+.chart-container {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 350px;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .year-cards {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .year-cards {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .chart-container {
+
+        height: 280px;
+
+    }
+
+}
+
+#departmentStudents {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.department-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.department-card h3 {
+    color: #1266f1;
+    font-size: 16px;
+}
+
+.department-card strong {
+    display: block;
+    font-size: 30px;
+    color: #1266f1;
+}
+
+.department-card p {
+    margin: 5px;
+    color: #555;
+}

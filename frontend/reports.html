@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<h2>Reports</h2>
+
+<button onclick="studentReport()">Student Report</button>
+<button onclick="attendanceReport()">Attendance Report</button>
+<button onclick="marksReport()">Marks Report</button>
+<button onclick="feesReport()">Fees Report</button>
+<button onclick="exportPDF()">📄 Export PDF</button>
+<button onclick="exportExcel()">📊 Export Excel</button>
+<button onclick="printReport()">🖨 Print / Save PDF</button>
+
+<br><br>
+
+<table border="1">
+    <thead id="reportHead"></thead>
+    <tbody id="reportBody"></tbody>
+</table>
+
+<script src="script.js"></script>
+
+</body>
+</html>

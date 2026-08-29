@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student - Student Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        if (localStorage.getItem("login") !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+
+<body>
+
+    <h1 align="center">Student Management System</h1>
+
+    <hr>
+
+    <div class="container">
+
+        <center>
+            <h2>➕ Add Student</h2>
+        </center>
+
+        <form>
+
+            <!-- Hidden ID -->
+            <input type="hidden" id="id">
+
+
+            <!-- Student Name -->
+            <label>Student Name</label><br>
+            <input type="text" id="name" required>
+            <br><br>
+
+
+            <!-- Register Number -->
+            <label>Register Number</label><br>
+            <input type="text" id="regno" required>
+            <br><br>
+
+
+            <!-- Gender -->
+            <label>Gender</label><br>
+
+            <select id="gender">
+                <option value="">Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+
+            <br><br>
+
+
+            <!-- Date of Birth -->
+            <label>Date of Birth</label><br>
+
+            <input type="date" id="dob">
+
+            <br><br>
+
+
+            <!-- Blood Group -->
+            <label>Blood Group</label><br>
+
+            <select id="bloodgroup">
+
+                <option value="">Select Blood Group</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>O+</option>
+                <option>O-</option>
+
+            </select>
+
+            <br><br>
+
+
+            <!-- Department -->
+            <label>Department</label><br>
+
+            <select id="department">
+
+                <option value="">Select Department</option>
+
+                <option>B.Sc Computer Science</option>
+                <option>B.Sc Mathematics</option>
+                <option>B.Sc Physics</option>
+                <option>B.Sc Chemistry</option>
+                <option>B.A English</option>
+                <option>B.A Tamil</option>
+                <option>B.Com</option>
+                <option>B.B.A</option>
+                <option>B.C.A</option>
+                <option>B.Sc Botany</option>
+
+            </select>
+
+            <br><br>
+
+
+            <!-- Year -->
+            <label>Year</label><br>
+
+            <select id="year">
+
+                <option value="">Select Year</option>
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+
+
+            </select>
+
+            <br><br>
+
+
+            <!-- Phone -->
+            <label>Phone Number</label><br>
+
+            <input type="tel" id="phone">
+
+            <br><br>
+
+
+            <!-- Email -->
+            <label>Email</label><br>
+
+            <input type="email" id="email">
+
+            <br><br>
+
+
+            <!-- Address -->
+            <label>Address</label><br>
+
+            <textarea id="address"></textarea>
+
+            <br><br>
+
+
+            <!-- Parent Name -->
+            <label>Parent Name</label><br>
+
+            <input type="text" id="parentname">
+
+            <br><br>
+
+
+            <!-- Parent Mobile -->
+            <label>Parent Mobile</label><br>
+
+            <input type="tel" id="parentphone">
+
+            <br><br>
+
+
+            <!-- Student Photo -->
+            <label>Student Photo</label><br>
+
+            <input type="file" id="photo" accept="image/*">
+
+            <br><br>
+
+
+            <!-- Batch -->
+            <label>Batch</label><br>
+
+            <input
+                type="text"
+                id="batch"
+                placeholder="2024-2027"
+            >
+
+            <br><br>
+
+
+            <label>College Shift</label><br>
+
+            <select id="college_shift">
+                <option value="">Select Shift</option>
+                <option value="Shift 1">Shift 1</option>
+                <option value="Shift 2">Shift 2</option>
+            </select>
+
+           <br><br>
+
+
+            <!-- Admission Date -->
+            <label>Admission Date</label><br>
+
+            <input
+                type="date"
+                id="admission_date"
+            >
+
+            <br><br>
+
+
+            <!-- Add Student Button -->
+            <center>
+
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="addStudent()"
+                >
+                    ➕ Add Student
+                </button>
+
+                <button type="button"
+                 class="btn" 
+                 onclick="deleteStudent()">
+
+                 Delete
+                </button>
+
+               <button type="button" 
+               class="btn" 
+               onclick="cancelForm()">
+               Cancel
+               </button>
+
+            </center>
+
+        </form>
+
+    </div>
+
+
+   
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+

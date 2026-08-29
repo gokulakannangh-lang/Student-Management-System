@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fees Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Fees Management</h2>
+
+<label>Student</label>
+<select id="feeStudent"></select>
+
+<br><br>
+
+<label>Semester</label>
+<select id="feeSemester">
+    <option value="">Select Semester</option>
+    <option>Semester 1</option>
+    <option>Semester 2</option>
+    <option>Semester 3</option>
+    <option>Semester 4</option>
+    <option>Semester 5</option>
+    <option>Semester 6</option>
+</select>
+
+<br><br>
+
+<label>Total Fees</label>
+<input type="number" id="totalFees">
+
+<br><br>
+
+<label>Paid Amount</label>
+<input type="number" id="paidAmount">
+
+<br><br>
+
+<label>Payment Date</label>
+<input type="date" id="paymentDate">
+
+<br><br>
+
+<button onclick="saveFees()">Save Fees</button>
+
+<hr>
+
+<input
+type="text"
+id="searchFees"
+placeholder="Search Student..."
+onkeyup="searchFees()">
+
+<br><br>
+
+<table border="1">
+
+<thead>
+
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Reg No</th>
+    <th>Semester</th>
+    <th>Total</th>
+    <th>Paid</th>
+    <th>Balance</th>
+    <th>Date</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="feesTable"></tbody>
+
+</table>
+
+<script src="script.js"></script>
+
+</body>
+</html>
