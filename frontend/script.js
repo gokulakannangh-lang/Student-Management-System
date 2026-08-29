@@ -17,7 +17,7 @@ function login() {
     console.log("Username:", username);
     console.log("Login request sending...");
 
-    fetch("http://student-management-system-5xwr.onrender.com/login", {
+    fetch("https://student-management-system-5xwr.onrender.com/login", {
 
         method: "POST",
 

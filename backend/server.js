@@ -7,7 +7,6 @@ const app = express();
 const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
 
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middleware
@@ -28,6 +27,142 @@ app.use("/uploads", express.static("uploads"));
 // Home Route
 app.get("/", (req, res) => {
     res.send("Student Management System Backend Running...");
+});
+
+// ADMIN + TEACHER LOGIN
+app.post("/login", (req, res) => {
+
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Username and Password are required"
+        });
+    }
+
+      const adminSql = `
+        SELECT *
+        FROM admins
+        WHERE username = ?
+        AND password = ?
+        LIMIT 1
+    `;
+
+    db.query(
+        adminSql,
+        [username, password],
+        (adminErr, adminResult) => {
+
+            if (adminErr) {
+
+                console.error("Admin Login Error:", adminErr);
+
+                return res.status(500).json({
+                    success: false,
+                    message: adminErr.sqlMessage
+                });
+
+            }
+
+          
+            if (adminResult.length > 0) {
+
+                const admin = adminResult[0];
+
+                console.log("Admin Login:", admin.username);
+
+                return res.json({
+
+                    success: true,
+
+                    message: "Admin Login Successful",
+
+                    role: "admin"
+
+                });
+
+            }
+
+            const teacherSql = `
+                SELECT
+                    id,
+                    username,
+                    password,
+                    name,
+                    department,
+                    year,
+                    college_shift
+                FROM teachers
+                WHERE username = ?
+                AND password = ?
+                LIMIT 1
+            `;
+
+            db.query(
+                teacherSql,
+                [username, password],
+                (teacherErr, teacherResult) => {
+
+                    if (teacherErr) {
+
+                        console.error(
+                            "Teacher Login Error:",
+                            teacherErr
+                        );
+
+                        return res.status(500).json({
+                            success: false,
+                            message: teacherErr.sqlMessage
+                        });
+
+                    }
+
+                    if (teacherResult.length > 0) {
+
+                        const teacher = teacherResult[0];
+
+                        console.log(
+                            "Teacher Login:",
+                            teacher.username
+                        );
+
+                        return res.json({
+
+                            success: true,
+
+                            message: "Teacher Login Successful",
+
+                            role: "teacher",
+
+                            teacherId: teacher.id,
+
+                            teacherName: teacher.name,
+
+                            department: teacher.department,
+
+                            year: teacher.year,
+
+                            college_shift: teacher.college_shift
+
+                        });
+
+                    }
+
+                    return res.json({
+
+                        success: false,
+
+                        message: "Invalid Username or Password"
+
+                    });
+
+                }
+            );
+
+        }
+    );
+
 });
 
 // ADD STUDENT
@@ -1639,148 +1774,7 @@ app.get("/dashboard/notifications",(req,res)=>{
 
 });
 
-// Login
-app.post("/login", (req, res) => {
-
-    const { username, password } = req.body;
-
-    // =========================
-    // ADMIN LOGIN
-    // =========================
-    db.query(
-        "SELECT * FROM admin WHERE username=? AND password=?",
-        [username, password],
-        (err, adminRows) => {
-
-            if (err) {
-                console.log(err);
-
-                return res.json({
-                    success: false,
-                    message: "Database Error"
-                });
-            }
-
-            if (adminRows.length > 0) {
-
-                saveLog(username, "Admin Logged In");
-
-                return res.json({
-                    success: true,
-                    message: "Admin Login Successful",
-                    role: "admin"
-                });
-            }
-
-            // =========================
-// TEACHER LOGIN
-// =========================
-db.query(
-    "SELECT * FROM teachers WHERE username=? AND password=?",
-    [username, password],
-    (err, teacherRows) => {
-
-        if (err) {
-            console.log(err);
-
-            return res.json({
-                success: false,
-                message: "Database Error"
-            });
-        }
-         
-        if (teacherRows.length > 0) {
-
-    const teacher = teacherRows[0];
-
-    saveLog(
-        username,
-        "Teacher Logged In"
-    );
-
-    return res.json({
-
-        success: true,
-
-        message: "Teacher Login Successful",
-
-        role: "teacher",
-
-        teacherId: teacher.id,
-
-        teacherName: teacher.name,
-
-        department: teacher.department,
-
-        year: teacher.year
-
-    });
-
-}
-
-
-
-                            // =========================
-                            // INVALID LOGIN
-                            // =========================
-                            return res.json({
-                                success: false,
-                                message: "Invalid Username or Password"
-                            });
-
-                        }
-                    );
-      }
-    );
-});
-
-function saveLog(user, activity) {
-
-    db.query(
-        "INSERT INTO activity_logs(user_name, activity) VALUES(?, ?)",
-        [user, activity]
-    );
-
-}
-// ==========================================
-// TEACHER ASSIGNED CLASSES
-// ==========================================
-
-app.get("/teacher-classes/:teacherId", (req, res) => {
-
-    const teacherId = req.params.teacherId;
-
-    const sql = `
-        SELECT
-            id,
-            department,
-            year
-        FROM teacher_classes
-        WHERE teacher_id = ?
-        ORDER BY department, year
-    `;
-
-    db.query(sql, [teacherId], (err, rows) => {
-
-        if (err) {
-
-            console.log("Teacher Classes Error:", err);
-
-            return res.status(500).json({
-                success: false,
-                message: "Database Error"
-            });
-
-        }
-
-        res.json({
-            success: true,
-            data: rows
-        });
-
-    });
-
-});
+   
 // register post
 app.post("/student-register", (req, res) => {
 
@@ -2096,8 +2090,8 @@ app.post("/teachers", (req, res) => {
 });
 
 // Server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
