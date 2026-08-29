@@ -43,7 +43,7 @@ app.post("/login", (req, res) => {
 
       const adminSql = `
         SELECT *
-        FROM admins
+        FROM admin
         WHERE username = ?
         AND password = ?
         LIMIT 1
