@@ -123,7 +123,7 @@ function logout() {
 
  function loadDashboardStats() {
 
-    fetch("http://localhost:5000/dashboard-stats")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard-stats")
 
         .then(res => res.json())
 
@@ -333,7 +333,7 @@ if (document.getElementById("departmentChart")) {
 //
 function loadStudentSummary() {
 
-    fetch("http://localhost:5000/dashboard/student-summary")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard/student-summary")
         .then(res => res.json())
         .then(result => {
 

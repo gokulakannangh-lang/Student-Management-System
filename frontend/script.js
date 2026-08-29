@@ -17,7 +17,7 @@ function login() {
     console.log("Username:", username);
     console.log("Login request sending...");
 
-    fetch("http://localhost:5000/login", {
+    fetch("http://student-management-system-5xwr.onrender.com/login", {
 
         method: "POST",
 
@@ -118,7 +118,7 @@ function addStudent() {
         formData.append("photo", photo);
     }
 
-    fetch("http://localhost:5000/students", {
+    fetch("http://student-management-system-5xwr.onrender.com/students", {
         method: "POST",
         body: formData
     })
@@ -193,7 +193,7 @@ function addStudent() {
 
   const role = localStorage.getItem("role");
 
-    let apiUrl = "http://localhost:5000/students";
+    let apiUrl = "http://student-management-system-5xwr.onrender.com/students";
     // TEACHER
     // Teacher department + year
 
@@ -210,7 +210,7 @@ function addStudent() {
     }
 
     apiUrl =
-        "http://localhost:5000/teacher-students/"
+        "http://student-management-system-5xwr.onrender.com/teacher-students/"
         + encodeURIComponent(teacherId);
 }
     // =========================================
@@ -369,7 +369,7 @@ function addStudent() {
            let photoCell = row.insertCell(17);
 
 const photoUrl = student.photo
-    ? `http://localhost:5000/uploads/${student.photo}`
+    ? `http://student-management-system-5xwr.onrender.com/uploads/${student.photo}`
     : "";
 
 if (student.photo) {
@@ -574,7 +574,7 @@ function deleteStudent() {
         return;
     }
 
-    fetch("http://localhost:5000/students/" + id, {
+    fetch("student-management-system-5xwr.onrender.com/" + id, {
         method: "DELETE"
     })
     .then(response => response.json())
@@ -612,7 +612,7 @@ function cancelForm() {
 
 }
 
-fetch("http://localhost:5000")
+fetch("http://student-management-system-5xwr.onrender.com")
 .then(res => res.text())
 .then(data => console.log(data))
 .catch(err => console.log(err));
@@ -653,7 +653,7 @@ function saveRow(id, row) {
         row.cells[15].querySelector("input").value
     );
 
-    fetch("http://localhost:5000/students/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/students/" + id, {
 
         method: "PUT",
 
@@ -734,7 +734,7 @@ function changePhoto(event, studentId) {
         formData.append("photo", file);
 
         fetch(
-            "http://localhost:5000/students/" +
+            "http://student-management-system-5xwr.onrender.com/students/" +
             studentId +
             "/photo",
             {
@@ -782,12 +782,12 @@ function loadProfile() {
 
     if (!id) return;
 
-    fetch("http://localhost:5000/students/" + id)
+    fetch("http://student-management-system-5xwr.onrender.com/students/" + id)
     .then(res => res.json())
     .then(student => {
 
         document.getElementById("profilePhoto").src =
-            "http://localhost:5000/uploads/" + student.photo;
+            "http://student-management-system-5xwr.onrender.com/uploads/" + student.photo;
 
         document.getElementById("profileName").innerText = student.name;
         document.getElementById("profileRegno").innerText = student.reg_no;
@@ -830,7 +830,7 @@ function viewProfile(id) {
 // Attendance Load
 function loadAttendance() {
 
-    fetch("http://localhost:5000/students") 
+    fetch("http://student-management-system-5xwr.onrender.com/students") 
     .then(res => res.json()) 
     .then(data => { 
       
@@ -903,7 +903,7 @@ function saveAttendance(id) {
 
     let status = document.getElementById("status" + id).value;
 
-    fetch("http://localhost:5000/attendance", {
+    fetch("http://student-management-system-5xwr.onrender.com/attendance", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -925,7 +925,7 @@ function saveAttendance(id) {
  //loadAttendanceRecords
 function loadAttendanceRecords() {
 
-    fetch("http://localhost:5000/attendance")
+    fetch("http://student-management-system-5xwr.onrender.com/attendance")
     .then(res => res.json())
     .then(data => {
 
@@ -1007,7 +1007,7 @@ function editAttendance(id,currentStatus){
 
     if(status == null) return;
 
-    fetch("http://localhost:5000/attendance/"+id,{
+    fetch("http://student-management-system-5xwr.onrender.com/attendance/"+id,{
         method:"PUT",
         headers:{
             "Content-Type":"application/json"
@@ -1028,7 +1028,7 @@ function deleteAttendance(id){
 
     if(!confirm("Delete Attendance?")) return;
 
-    fetch("http://localhost:5000/attendance/"+id,{
+    fetch("http://student-management-system-5xwr.onrender.com/attendance/"+id,{
         method:"DELETE"
     })
     .then(res=>res.json())
@@ -1046,7 +1046,7 @@ function loadStudentDropdown() {
 
     if (!studentSelect) return;
 
-    fetch("http://localhost:5000/students")
+    fetch("http://student-management-system-5xwr.onrender.com/students")
     .then(res => res.json())
     .then(data => {
 
@@ -1108,7 +1108,7 @@ function saveMarks(){
     semester: semester
 });
 
-    fetch("http://localhost:5000/marks",{
+    fetch("http://student-management-system-5xwr.onrender.com/marks",{
 
         method:"POST",
 
@@ -1152,7 +1152,7 @@ function saveMarks(){
 function loadMarks(){
 
    document.getElementById("semester").selectedIndex = 0;
-  fetch("http://localhost:5000/marks")
+  fetch("http://student-management-system-5xwr.onrender.com/marks")
 
     .then(res=>res.json())
 
@@ -1226,7 +1226,7 @@ function editMarks(id) {
 
     if (semester == null) return;
 
-    fetch("http://localhost:5000/marks/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/marks/" + id, {
 
         method: "PUT",
 
@@ -1261,7 +1261,7 @@ function deleteMarks(id) {
 
     if (!confirm("Delete this mark record?")) return;
 
-    fetch("http://localhost:5000/marks/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/marks/" + id, {
 
         method: "DELETE"
 
@@ -1286,7 +1286,7 @@ function loadFeeStudents() {
 
     if (!select) return;
 
-    fetch("http://localhost:5000/students")
+    fetch("http://student-management-system-5xwr.onrender.com/students")
     .then(res => res.json())
     .then(data => {
 
@@ -1334,7 +1334,7 @@ function saveFees() {
         return;
     }
 
-    fetch("http://localhost:5000/fees", {
+    fetch("http://student-management-system-5xwr.onrender.com/fees", {
 
         method: "POST",
 
@@ -1375,7 +1375,7 @@ function saveFees() {
 //lodefees
 function loadFees() {
 
-    fetch("http://localhost:5000/fees")
+    fetch("http://student-management-system-5xwr.onrender.com/fees")
 
     .then(res => res.json())
 
@@ -1431,7 +1431,7 @@ function editFees(id) {
     let payment_date = prompt("Enter Payment Date (YYYY-MM-DD)");
     if (payment_date == null) return;
 
-    fetch("http://localhost:5000/fees/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/fees/" + id, {
 
         method: "PUT",
 
@@ -1467,7 +1467,7 @@ function deleteFees(id) {
 
     if (!confirm("Delete Fee Record?")) return;
 
-    fetch("http://localhost:5000/fees/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/fees/" + id, {
 
         method: "DELETE"
 
@@ -1517,7 +1517,7 @@ function searchFees() {
 function exportPDF() {
 
     window.open(
-        "http://localhost:5000/students/pdf",
+        "http://student-management-system-5xwr.onrender.com/students/pdf",
         "_blank"
     );
 
@@ -1564,7 +1564,7 @@ function exportExcel() {
 //studentReport
 function studentReport() {
 
-    fetch("http://localhost:5000/students")
+    fetch("http://student-management-system-5xwr.onrender.com/students")
     .then(res => res.json())
     .then(data => {
 
@@ -1602,7 +1602,7 @@ function studentReport() {
 //attendancereport
 function attendanceReport() {
 
-    fetch("http://localhost:5000/reports/attendance")
+    fetch("http://student-management-system-5xwr.onrender.com/reports/attendance")
     .then(res => res.json())
     .then(data => {
 
@@ -1641,7 +1641,7 @@ function attendanceReport() {
 //marksreport
 function marksReport() {
 
-    fetch("http://localhost:5000/reports/marks")
+    fetch("http://student-management-system-5xwr.onrender.com/reports/marks")
     .then(res => res.json())
     .then(data => {
 
@@ -1692,7 +1692,7 @@ if (document.getElementById("reportTable")) {
 //feesreport
 function feesReport() {
 
-    fetch("http://localhost:5000/reports/fees")
+    fetch("http://student-management-system-5xwr.onrender.com/reports/fees")
     .then(res => res.json())
     .then(data => {
 
@@ -1739,7 +1739,7 @@ function feesReport() {
 //loadeyearchart
 function loadYearChart() {
 
-    fetch("http://localhost:5000/students")
+    fetch("http://student-management-system-5xwr.onrender.com/students")
     .then(res => res.json())
     .then(data => {
 
@@ -1808,7 +1808,7 @@ function loadIDCard() {
 
     if (!id) return;
 
-    fetch("http://localhost:5000/students/" + id)
+    fetch("http://student-management-system-5xwr.onrender.com/students/" + id)
     .then(res => res.json())
     .then(student => {
 
@@ -1817,7 +1817,7 @@ function loadIDCard() {
 
 
         document.getElementById("studentPhoto").src =
-            "http://localhost:5000/uploads/" + student.photo;
+            "http://student-management-system-5xwr.onrender.com/uploads/" + student.photo;
 
         document.getElementById("name").innerText = student.name;
         document.getElementById("regno").innerText = student.reg_no;
@@ -1874,7 +1874,7 @@ function loadResult() {
     }
 
     const url =
-        "http://localhost:5000/student-result/"
+        "http://student-management-system-5xwr.onrender.com/student-result/"
         + studentId
         + "/"
         + encodeURIComponent(semester);
@@ -2004,7 +2004,7 @@ function loadResult() {
 //lodesitting
 function loadSettings() {
 
-    fetch("http://localhost:5000/settings")
+    fetch("http://student-management-system-5xwr.onrender.com/settings")
     .then(res => res.json())
     .then(data => {
 
@@ -2024,7 +2024,7 @@ if (document.getElementById("college_name")) {
 //savesetting
 function saveSettings() {
 
-    fetch("http://localhost:5000/settings", {
+    fetch("http://student-management-system-5xwr.onrender.com/settings", {
 
         method: "PUT",
 
@@ -2068,7 +2068,7 @@ function uploadLogo(){
 
     formData.append("logo", file);
 
-    fetch("http://localhost:5000/settings/logo",{
+    fetch("http://student-management-system-5xwr.onrender.com/settings/logo",{
 
         method:"PUT",
 
@@ -2095,7 +2095,7 @@ function loadDepartmentChart() {
 
     const role = localStorage.getItem("role");
 
-    let apiUrl = "http://localhost:5000/dashboard/chart";
+    let apiUrl = "http://student-management-system-5xwr.onrender.com/dashboard/chart";
 
     // Teacher → அவருடைய department மட்டும்
     if (role === "teacher") {
@@ -2109,7 +2109,7 @@ function loadDepartmentChart() {
         }
 
         apiUrl =
-            "http://localhost:5000/dashboard/teacher-chart/"
+            "http://student-management-system-5xwr.onrender.com/dashboard/teacher-chart/"
             + teacherId;
     }
 
@@ -2172,7 +2172,7 @@ if (document.getElementById("departmentChart")) {
 //loadYearChart
 function loadYearChart() {
 
-    fetch("http://localhost:5000/dashboard/year-chart")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard/year-chart")
 
     .then(res => res.json())
 
@@ -2226,7 +2226,7 @@ if (document.getElementById("yearChart")) {
 //loadAttendanceChart
 function loadAttendanceChart() {
 
-    fetch("http://localhost:5000/dashboard/attendance-chart")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard/attendance-chart")
 
     .then(res => res.json())
 
@@ -2279,7 +2279,7 @@ if (document.getElementById("attendanceChart")) {
 
 //loadDashboardSummary
 function loadDashboardSummary(){
-    fetch("http://localhost:5000/dashboard/summary")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard/summary")
 
     .then(res=>res.json())
 
@@ -2302,13 +2302,13 @@ if(document.getElementById("feesPaid")){
 
 //exportstudents
 function exportStudents() {
-    window.open("http://localhost:5000/export/students");
+    window.open("http://student-management-system-5xwr.onrender.com/export/students");
 }
 
 //Notifications
 function loadNotifications(){
 
-    fetch("http://localhost:5000/dashboard/notifications")
+    fetch("http://student-management-system-5xwr.onrender.com/dashboard/notifications")
 
     .then(res=>res.json())
 
@@ -2334,7 +2334,7 @@ if(document.getElementById("notificationBox")){
 //loadActivity
 function loadActivity() {
 
-    fetch("http://localhost:5000/activity")
+    fetch("http://student-management-system-5xwr.onrender.com/activity")
     .then(res => res.json())
     .then(data => {
 
@@ -2380,7 +2380,7 @@ function saveSubject() {
         return;
     }
 
-    fetch("http://localhost:5000/subjects", {
+    fetch("http://student-management-system-5xwr.onrender.com/subjects", {
 
         method: "POST",
 
@@ -2420,7 +2420,7 @@ function saveSubject() {
 //lodesubject
 function loadSubjects() {
 
-    fetch("http://localhost:5000/subjects")
+    fetch("http://student-management-system-5xwr.onrender.com/subjects")
 
     .then(res => res.json())
 
@@ -2469,7 +2469,7 @@ function deleteSubject(id) {
 
     if (!confirm("Delete Subject?")) return;
 
-    fetch("http://localhost:5000/subjects/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/subjects/" + id, {
 
         method: "DELETE"
 
@@ -2507,7 +2507,7 @@ function editSubject(id, department, semester, code, name) {
     let newName = prompt("Subject Name", name);
     if (newName == null) return;
 
-    fetch("http://localhost:5000/subjects/" + id, {
+    fetch("http://student-management-system-5xwr.onrender.com/subjects/" + id, {
 
         method: "PUT",
 
@@ -2546,7 +2546,7 @@ function filterStudentsByDepartment() {
     const department =
         document.getElementById("departmentFilter").value;
 
-    fetch("http://localhost:5000/students")
+    fetch("http://student-management-system-5xwr.onrender.com/students")
         .then(response => response.json())
         .then(data => {
 
@@ -2610,11 +2610,11 @@ function filterStudentsByDepartment() {
 
                     photoCell.innerHTML = `
                         <img
-                            src="http://localhost:5000/uploads/${student.photo}"
+                            src="http://student-management-system-5xwr.onrender.com/uploads/${student.photo}"
                             width="60"
                             height="60"
                             style="border-radius:5px;cursor:pointer;"
-                            onclick="showPhoto('http://localhost:5000/uploads/${student.photo}')"
+                            onclick="showPhoto('http://student-management-system-5xwr.onrender.com/uploads/${student.photo}')"
                         >
 
                         <br>
@@ -2718,7 +2718,7 @@ function loadSelectedStudentProfile() {
 
 
     fetch(
-        "http://localhost:5000/students/" + id
+        "http://student-management-system-5xwr.onrender.com/students/" + id
     )
 
     .then(response => response.json())
@@ -2742,7 +2742,7 @@ function loadSelectedStudentProfile() {
             if (student.photo) {
 
                 photo.src =
-                    "http://localhost:5000/uploads/"
+                    "http://student-management-system-5xwr.onrender.com/uploads/"
                     + student.photo;
 
             } else {
@@ -2965,7 +2965,7 @@ function addTeacher() {
     // ======================================
 
     fetch(
-        "http://localhost:5000/teachers",
+        "http://student-management-system-5xwr.onrender.com/teachers",
         {
 
             method: "POST",

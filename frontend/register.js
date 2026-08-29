@@ -20,7 +20,7 @@ document
             return;
         }
 
-        fetch("http://localhost:5000/student-register", {
+        fetch("http://student-management-system-5xwr.onrender.com/student-register", {
 
             method: "POST",
 
