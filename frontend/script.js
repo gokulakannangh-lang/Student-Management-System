@@ -574,7 +574,7 @@ function deleteStudent() {
         return;
     }
 
-    fetch("student-management-system-5xwr.onrender.com/" + id, {
+    fetch("https://student-management-system-5xwr.onrender.com/" + id, {
         method: "DELETE"
     })
     .then(response => response.json())
@@ -1808,7 +1808,7 @@ function loadIDCard() {
 
     if (!id) return;
 
-    fetch("/students/" + id)
+    fetch("https://student-management-system-5xwr.onrender.com/students/" + id)
     .then(res => res.json())
     .then(student => {
 
