@@ -8,6 +8,17 @@ const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
 const frontendPath = path.join(__dirname, "../frontend");
 
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(frontendPath, "login.html"));
+});
+
+app.get("/login.html", (req, res) => {
+    res.sendFile(path.join(frontendPath, "login.html"));
+});
+
+
+
 app.use(express.static(frontendPath));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -29,13 +40,6 @@ app.use("/uploads", express.static("uploads"));
 
 // Home Route
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(frontendPath, "login.html"));
-});
-
-app.get("/login.html", (req, res) => {
-    res.sendFile(path.join(frontendPath, "login.html"));
-});
 
 // ADMIN + TEACHER LOGIN
 app.post("/login", (req, res) => {
