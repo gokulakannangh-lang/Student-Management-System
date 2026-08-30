@@ -6,6 +6,9 @@ const path = require("path");
 const app = express();
 const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
+const frontendPath = path.join(__dirname, "../frontend");
+
+app.use(express.static(frontendPath));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -27,6 +30,14 @@ app.use("/uploads", express.static("uploads"));
 // Home Route
 app.get("/", (req, res) => {
     res.send("Student Management System Backend Running...");
+});
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(frontendPath, "login.html"));
+});
+
+app.get("/login.html", (req, res) => {
+    res.sendFile(path.join(frontendPath, "login.html"));
 });
 
 // ADMIN + TEACHER LOGIN
@@ -2091,6 +2102,14 @@ app.post("/teachers", (req, res) => {
 
 // Server
 const PORT = process.env.PORT || 5000;
+
+app.get("/test-frontend", (req, res) => {
+    res.json({
+        dirname: __dirname,
+        frontendPath: frontendPath
+    });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
