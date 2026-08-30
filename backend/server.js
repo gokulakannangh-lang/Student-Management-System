@@ -28,9 +28,6 @@ const upload = multer({ storage: storage });
 app.use("/uploads", express.static("uploads"));
 
 // Home Route
-app.get("/", (req, res) => {
-    res.send("Student Management System Backend Running...");
-});
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(frontendPath, "login.html"));
