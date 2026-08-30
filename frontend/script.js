@@ -612,7 +612,7 @@ function cancelForm() {
 
 }
 
-fetch("https://student-management-system-5xwr.onrender.com")
+fetch("https://student-management-system-5xwr.onrender.com/")
 .then(res => res.text())
 .then(data => console.log(data))
 .catch(err => console.log(err));
