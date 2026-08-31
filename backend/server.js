@@ -55,10 +55,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-app.use(
-    "/uploads",
-    express.static(uploadPath)
-);
+app.use("/uploads",express.static(uploadPath));
+app.get("/test-upload", (req, res) => {
+    res.json({
+        uploadPath: uploadPath,
+        files: fs.readdirSync(uploadPath)
+    });
+});
 
 // Home Route
 
