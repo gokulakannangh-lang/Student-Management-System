@@ -1,13 +1,24 @@
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const db = require("./database");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
 const app = express();
+
 const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
+
 const frontendPath = path.join(__dirname, "../frontend");
+
+const uploadPath = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
 
 
 app.get("/", (req, res) => {
@@ -19,25 +30,40 @@ app.get("/login.html", (req, res) => {
 });
 
 
-
 app.use(express.static(frontendPath));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+    "/uploads",
+    express.static(uploadPath)
+);
 
-// Middleware
 app.use(cors());
+
 app.use(express.json());
 
+
 const storage = multer.diskStorage({
-    destination: "./uploads/",
+
+    destination: (req, file, cb) => {
+        cb(null, uploadPath);
+    },
+
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+        cb(
+            null,
+            Date.now() + path.extname(file.originalname)
+        );
     }
+
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-app.use("/uploads", express.static("uploads"));
+
+app.use(
+    "/uploads",
+    express.static(uploadPath)
+);
 
 // Home Route
 
