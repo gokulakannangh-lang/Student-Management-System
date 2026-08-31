@@ -32,11 +32,6 @@ app.get("/login.html", (req, res) => {
 
 app.use(express.static(frontendPath));
 
-app.use(
-    "/uploads",
-    express.static(uploadPath)
-);
-
 app.use(cors());
 
 app.use(express.json());
