@@ -5,7 +5,8 @@ const cors = require("cors");
 const db = require("./database");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 
@@ -14,12 +15,23 @@ const ExcelJS = require("exceljs");
 
 const frontendPath = path.join(__dirname, "../frontend");
 
-const uploadPath = path.join(__dirname, "uploads");
+// Cloudinary Configuration
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-}
+// Cloudinary Storage
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "student-management-system",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"]
+    }
+});
 
+const upload = multer({ storage });
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(frontendPath, "login.html"));
@@ -29,42 +41,13 @@ app.get("/login.html", (req, res) => {
     res.sendFile(path.join(frontendPath, "login.html"));
 });
 
-
 app.use(express.static(frontendPath));
 
 app.use(cors());
 
 app.use(express.json());
 
-
-const storage = multer.diskStorage({
-
-    destination: (req, file, cb) => {
-        cb(null, uploadPath);
-    },
-
-    filename: (req, file, cb) => {
-        cb(
-            null,
-            Date.now() + path.extname(file.originalname)
-        );
-    }
-
-});
-
-const upload = multer({ storage });
-
-
-app.use("/uploads",express.static(uploadPath));
-app.get("/test-upload", (req, res) => {
-    res.json({
-        uploadPath: uploadPath,
-        files: fs.readdirSync(uploadPath)
-    });
-});
-
 // Home Route
-
 
 // ADMIN + TEACHER LOGIN
 app.post("/login", (req, res) => {
