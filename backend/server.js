@@ -263,7 +263,23 @@ app.post("/students", upload.single("photo"), (req, res) => {
                 });
             }
 
-            //saveLog("Admin", "Added Student : " + name);
+            if (err) {
+    console.log("Add Student Error:", err);
+
+    return res.status(500).json({
+        success: false,
+        message: err.sqlMessage || "Database error"
+    });
+}
+
+// saveLog("Admin", "Added Student : " + name);
+
+res.json({
+    success: true,
+    message: "Student Saved Successfully",
+    id: result.insertId,
+    photo: photo
+});
 
             res.json({success: true,message: "Student Saved Successfully",id: result.insertId});
 
