@@ -263,13 +263,9 @@ app.post("/students", upload.single("photo"), (req, res) => {
                 });
             }
 
-            saveLog("Admin", "Added Student : " + name);
+            //saveLog("Admin", "Added Student : " + name);
 
-            res.json({
-                success: true,
-                message: "Student Saved Successfully",
-                id: result.insertId
-            });
+            res.json({success: true,message: "Student Saved Successfully",id: result.insertId});
 
         }
     );
