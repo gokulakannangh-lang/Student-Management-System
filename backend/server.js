@@ -206,7 +206,7 @@ app.post("/students", upload.single("photo"), (req, res) => {
         admission_date
     } = req.body;
 
-    const photo = req.file ? req.file.filename : "";
+    const photo = req.file ? req.file.path : "";
 
     const sql = `
         INSERT INTO students
