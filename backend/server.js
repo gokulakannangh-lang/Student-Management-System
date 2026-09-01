@@ -22,7 +22,6 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Cloudinary Storage
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -31,7 +30,10 @@ const storage = new CloudinaryStorage({
     }
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage:storage
+
+
+ });
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(frontendPath, "login.html"));
@@ -186,7 +188,12 @@ app.post("/login", (req, res) => {
 });
 
 // ADD STUDENT
+// ADD STUDENT
 app.post("/students", upload.single("photo"), (req, res) => {
+
+    console.log("========== ADD STUDENT ==========");
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
     const {
         name,
@@ -206,6 +213,7 @@ app.post("/students", upload.single("photo"), (req, res) => {
         admission_date
     } = req.body;
 
+    // Cloudinary URL
     const photo = req.file ? req.file.path : "";
 
     const sql = `
@@ -228,8 +236,7 @@ app.post("/students", upload.single("photo"), (req, res) => {
             admission_date,
             photo
         )
-          VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -255,40 +262,27 @@ app.post("/students", upload.single("photo"), (req, res) => {
         (err, result) => {
 
             if (err) {
-                console.log("Add Student Error:", err);
+
+                console.error("Add Student DB Error:", err);
 
                 return res.status(500).json({
                     success: false,
-                    message: err.sqlMessage
+                    message: err.sqlMessage || "Database error"
                 });
             }
 
-            if (err) {
-    console.log("Add Student Error:", err);
+            console.log("Student Saved ID:", result.insertId);
+            console.log("Cloudinary Photo:", photo);
 
-    return res.status(500).json({
-        success: false,
-        message: err.sqlMessage || "Database error"
-    });
-}
-
-// saveLog("Admin", "Added Student : " + name);
-
-res.json({
-    success: true,
-    message: "Student Saved Successfully",
-    id: result.insertId,
-    photo: photo
-});
-
-            res.json({success: true,message: "Student Saved Successfully",id: result.insertId});
-
+            return res.json({
+                success: true,
+                message: "Student Saved Successfully",
+                id: result.insertId,
+                photo: photo
+            });
         }
     );
-
 });
-
-
 // Get Students API
 app.get("/students", (req, res) => {
 
@@ -1027,23 +1021,42 @@ app.get("/students/photo/:id", (req, res) => {
 });
 
 // Photo Update
-app.put("/students/photo/:id", upload.single("photo"), (req, res) => {
-     
+// UPDATE STUDENT PHOTO
+app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
+
     const id = req.params.id;
-    const photo = req.file.filename;
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: "Photo not selected"
+        });
+    }
+
+    const photo = req.file.path;
 
     db.query(
         "UPDATE students SET photo=? WHERE id=?",
         [photo, id],
         (err) => {
+
             if (err) {
-                return res.status(500).json({ message: "Database Error" });
+
+                console.error("Photo Update Error:", err);
+
+                return res.status(500).json({
+                    success: false,
+                    message: err.sqlMessage || "Database Error"
+                });
             }
 
-            res.json({ message: "Photo Updated Successfully" });
+            return res.json({
+                success: true,
+                message: "Photo Updated Successfully",
+                photo: photo
+            });
         }
     );
-
 });
 
 // Add Fees
