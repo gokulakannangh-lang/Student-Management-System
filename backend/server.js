@@ -440,7 +440,6 @@ WHERE id=?
             });
         }
 
-saveLog("Admin", "Updated Student ID : " + id);
      console.log(result); 
 
         res.json({
@@ -847,7 +846,7 @@ return res.status(500).json({
 message:err.sqlMessage
 });
 }
- saveLog("Admin", "Marks Added");
+ //saveLog("Admin", "Marks Added");
 res.json({
 message:"Marks Saved Successfully"
 });
@@ -994,7 +993,7 @@ app.delete("/students/:id", (req, res) => {
         
         else 
         {
-            saveLog("Admin", "Deleted Student ID : " + id);
+             //saveLog("Admin", "Deleted Student ID : " + id);
             res.json({ message: "Student Deleted Successfully" });
         }
 
@@ -1087,7 +1086,7 @@ app.post("/fees", (req, res) => {
                     message: "Error Adding Fees"
                 });
             }
-              saveLog("Admin", "Fees Added");
+              //saveLog("Admin", "Fees Added");
             res.json({
                 success: true,
                 message: "Fees Added Successfully"
@@ -2097,7 +2096,7 @@ app.post("/teachers", (req, res) => {
             }
 
 
-            saveLog(
+        //saveLog(
                 "Admin",
                 "Teacher Added"
             );
