@@ -188,12 +188,7 @@ app.post("/login", (req, res) => {
 });
 
 // ADD STUDENT
-// ADD STUDENT
 app.post("/students", upload.single("photo"), (req, res) => {
-
-    console.log("========== ADD STUDENT ==========");
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
 
     const {
         name,
@@ -270,9 +265,6 @@ app.post("/students", upload.single("photo"), (req, res) => {
                     message: err.sqlMessage || "Database error"
                 });
             }
-
-            console.log("Student Saved ID:", result.insertId);
-            console.log("Cloudinary Photo:", photo);
 
             return res.json({
                 success: true,
@@ -470,11 +462,11 @@ app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
     if (!req.file) {
         return res.status(400).json({
             success: false,
-            message: "Photo not selected"
+            message: "Photo is required"
         });
     }
 
-    const photo = req.file.filename;
+    const photo = req.file.path;
 
     const sql = `
         UPDATE students
@@ -492,7 +484,7 @@ app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
 
                 return res.status(500).json({
                     success: false,
-                    message: err.sqlMessage
+                    message: err.sqlMessage || "Database error"
                 });
             }
 
