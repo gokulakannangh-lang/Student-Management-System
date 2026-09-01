@@ -488,11 +488,6 @@ app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
                 });
             }
 
-            saveLog(
-                "Admin/Teacher",
-                "Updated Student Photo ID : " + id
-            );
-
             res.json({
                 success: true,
                 message: "Photo Updated Successfully",
