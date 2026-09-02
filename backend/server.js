@@ -23,14 +23,17 @@ cloudinary.config({
 });
 
 app.get("/cloudinary-test", async (req, res) => {
-
     try {
+
+        console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
+        console.log("API Key exists:", !!process.env.CLOUDINARY_API_KEY);
+        console.log("API Secret exists:", !!process.env.CLOUDINARY_API_SECRET);
 
         const result = await cloudinary.api.ping();
 
         console.log("Cloudinary Ping:", result);
 
-        res.json({
+        res.status(200).json({
             success: true,
             message: "Cloudinary Connected Successfully",
             result: result
@@ -38,16 +41,15 @@ app.get("/cloudinary-test", async (req, res) => {
 
     } catch (error) {
 
-        console.error("Cloudinary Ping Error:", error);
+        console.error("CLOUDINARY ERROR:", error);
 
         res.status(500).json({
             success: false,
-            message: error.message,
-            http_code: error.http_code
+            error: error.message || "Unknown error",
+            http_code: error.http_code || null,
+            name: error.name || null
         });
-
     }
-
 });
 
 console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
