@@ -30,10 +30,7 @@ const storage = new CloudinaryStorage({
     }
 });
 
-const upload = multer({ storage:storage
-
-
- });
+const upload = multer({ storage });
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(frontendPath, "login.html"));
@@ -1007,42 +1004,61 @@ app.get("/students/photo/:id", (req, res) => {
 });
 
 // Photo Update
-// UPDATE STUDENT PHOTO
 app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
 
     const id = req.params.id;
 
+    console.log("Student ID:", id);
+    console.log("Uploaded File:", req.file);
+
     if (!req.file) {
         return res.status(400).json({
             success: false,
-            message: "Photo not selected"
+            message: "Photo is required"
         });
     }
 
+    // Cloudinary URL
     const photo = req.file.path;
 
-    db.query(
-        "UPDATE students SET photo=? WHERE id=?",
-        [photo, id],
-        (err) => {
+    console.log("Cloudinary Photo URL:", photo);
 
-            if (err) {
+    const sql = `
+        UPDATE students
+        SET photo = ?
+        WHERE id = ?
+    `;
 
-                console.error("Photo Update Error:", err);
+    db.query(sql, [photo, id], (err, result) => {
 
-                return res.status(500).json({
-                    success: false,
-                    message: err.sqlMessage || "Database Error"
-                });
-            }
+        if (err) {
 
-            return res.json({
-                success: true,
-                message: "Photo Updated Successfully",
-                photo: photo
+            console.error("Photo Database Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database error"
             });
         }
-    );
+
+        if (result.affectedRows === 0) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        console.log("Photo updated successfully");
+
+        res.json({
+            success: true,
+            message: "Photo Updated Successfully",
+            photo: photo
+        });
+
+    });
+
 });
 
 // Add Fees
@@ -2095,13 +2111,6 @@ app.post("/teachers", (req, res) => {
 
             }
 
-
-        //saveLog(
-                "Admin",
-                "Teacher Added"
-            );
-
-
             res.json({
 
                 success: true,
@@ -2117,6 +2126,17 @@ app.post("/teachers", (req, res) => {
         }
 
     );
+
+});
+// Global Error Handler
+app.use((err, req, res, next) => {
+
+    console.error("GLOBAL ERROR:", err);
+
+    res.status(500).json({
+        success: false,
+        message: err.message || "Server error"
+    });
 
 });
 

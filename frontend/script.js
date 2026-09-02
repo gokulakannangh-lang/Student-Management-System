@@ -110,8 +110,15 @@ function addStudent() {
     formData.append("parentname", document.getElementById("parentname").value);
     formData.append("parentphone", document.getElementById("parentphone").value);
     formData.append("batch", document.getElementById("batch").value);
-    formData.append("college_shift",document.getElementById("college_shift").value);
-    formData.append("admission_date", document.getElementById("admission_date").value);
+    formData.append(
+        "college_shift",
+        document.getElementById("college_shift").value
+    );
+    formData.append(
+        "admission_date",
+        document.getElementById("admission_date").value
+    );
+
     let photo = document.getElementById("photo").files[0];
 
     if (photo) {
@@ -122,44 +129,70 @@ function addStudent() {
         method: "POST",
         body: formData
     })
-    
-      .then(response => response.json())
-.then(data => {
 
-    console.log("ADD STUDENT RESPONSE:", data);
+    .then(async response => {
 
-    if (!data.success) {
-        alert("Error: " + data.message);
-        return;
-    }
+        const text = await response.text();
 
-    alert(data.message);  
-    // Database 
-    document.getElementById("id").value = data.id;
+        console.log("SERVER STATUS:", response.status);
+        console.log("SERVER RESPONSE:", text);
 
-    loadStudents();
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            throw new Error("Server JSON இல்லை: " + text);
+        }
 
-   
-    document.getElementById("name").value = "";
-    document.getElementById("regno").value = "";
-    document.getElementById("gender").selectedIndex = 0;
-    document.getElementById("dob").value = "";
-    document.getElementById("bloodgroup").selectedIndex = 0;
-    document.getElementById("department").selectedIndex = 0;
-    document.getElementById("year").selectedIndex = 0;
-    document.getElementById("phone").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("address").value = "";
-    document.getElementById("parentname").value = "";
-    document.getElementById("parentphone").value = "";
-    document.getElementById("batch").value = "";
-    document.getElementById("admission_date").value = "";
-    document.getElementById("college_shift").value = "";
-    document.getElementById("photo").value = "";
-})
-    
-    .catch(error => console.log(error));
+    })
 
+    .then(data => {
+
+        console.log("ADD STUDENT RESPONSE:", data);
+
+        if (!data.success) {
+            alert("Error: " + (data.message || JSON.stringify(data)));
+            return;
+        }
+
+        alert(data.message);
+
+        // Database ID
+        if (data.id) {
+            document.getElementById("id").value = data.id;
+        }
+
+        // Reload student list
+        if (typeof loadStudents === "function") {
+            loadStudents();
+        }
+
+        // Clear form
+        document.getElementById("name").value = "";
+        document.getElementById("regno").value = "";
+        document.getElementById("gender").selectedIndex = 0;
+        document.getElementById("dob").value = "";
+        document.getElementById("bloodgroup").selectedIndex = 0;
+        document.getElementById("department").selectedIndex = 0;
+        document.getElementById("year").selectedIndex = 0;
+        document.getElementById("phone").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("parentname").value = "";
+        document.getElementById("parentphone").value = "";
+        document.getElementById("batch").value = "";
+        document.getElementById("admission_date").value = "";
+        document.getElementById("college_shift").selectedIndex = 0;
+        document.getElementById("photo").value = "";
+
+    })
+
+    .catch(error => {
+
+        console.error("Add Student Error:", error);
+
+        alert(error.message);
+
+    });
 }
 
 // Search Student
@@ -367,14 +400,12 @@ function addStudent() {
 
             // PHOTO
            let photoCell = row.insertCell(17);
-
-const photoUrl = student.photo
-    ? `https://student-management-system-5xwr.onrender.com/uploads/${student.photo}`
-    : "";
-
+      
+           const photoUrl = student.photo || "";
+      
 if (student.photo) {
 
-    photoCell.innerHTML = `
+              photoCell.innerHTML = `
         <img
             src="${photoUrl}"
             width="60"
@@ -700,6 +731,7 @@ function saveRow(id, row) {
 }
 
 //changePhoto
+// CHANGE PHOTO
 function changePhoto(event, studentId) {
 
     event.preventDefault();
@@ -707,7 +739,6 @@ function changePhoto(event, studentId) {
 
     const role = localStorage.getItem("role");
 
-    
     if (role !== "admin" && role !== "teacher") {
         alert("You don't have permission to change photo");
         return;
@@ -718,7 +749,7 @@ function changePhoto(event, studentId) {
     input.type = "file";
     input.accept = "image/*";
 
-    input.onchange = function () {
+    input.onchange = async function () {
 
         const file = input.files[0];
 
@@ -729,41 +760,58 @@ function changePhoto(event, studentId) {
         const formData = new FormData();
         formData.append("photo", file);
 
-        fetch(
-            "https://student-management-system-5xwr.onrender.com/students/" +
-            studentId +
-            "/photo",
-            {
-                method: "PUT",
-                body: formData
+        try {
+
+            const response = await fetch(
+                "https://student-management-system-5xwr.onrender.com/students/"
+                + studentId
+                + "/photo",
+                {
+                    method: "PUT",
+                    body: formData
+                }
+            );
+
+            const text = await response.text();
+
+            console.log("PHOTO STATUS:", response.status);
+            console.log("PHOTO RESPONSE:", text);
+
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch (error) {
+                throw new Error(
+                    "Server JSON response இல்லை: " + text
+                );
             }
-        )
-        .then(response => response.json())
-        .then(data => {
 
             console.log("Photo Update:", data);
 
-            if (data.success) {
+            if (!response.ok || !data.success) {
 
-                alert("Photo Updated Successfully ✅");
+                alert(
+                    "Photo update failed: " +
+                    (data.message || "Unknown error")
+                );
 
-                loadStudents();
-
-            } else {
-
-                alert(data.message || "Photo update failed");
-
+                return;
             }
 
-        })
-        .catch(error => {
+            alert("Photo Updated Successfully ✅");
+
+            loadStudents();
+
+        } catch (error) {
 
             console.error("Photo Update Error:", error);
 
-            alert("Server error while updating photo");
-
-        });
-
+            alert(
+                "Photo update failed.\n\n" +
+                error.message
+            );
+        }
     };
 
     input.click();
@@ -782,8 +830,7 @@ function loadProfile() {
     .then(res => res.json())
     .then(student => {
 
-        document.getElementById("profilePhoto").src =
-            "https://student-management-system-5xwr.onrender.com/uploads/" + student.photo;
+        document.getElementById("profilePhoto").src = student.photo;
 
         document.getElementById("profileName").innerText = student.name;
         document.getElementById("profileRegno").innerText = student.reg_no;
@@ -1812,8 +1859,7 @@ function loadIDCard() {
         console.log(student.photo);
 
 
-        document.getElementById("studentPhoto").src =
-            "https://student-management-system-5xwr.onrender.com/uploads/" + student.photo;
+        document.getElementById("studentPhoto").src = student.photo;
 
         document.getElementById("name").innerText = student.name;
         document.getElementById("regno").innerText = student.reg_no;
@@ -2606,11 +2652,11 @@ function filterStudentsByDepartment() {
 
                     photoCell.innerHTML = `
                         <img
-                            src="https://student-management-system-5xwr.onrender.com/uploads/${student.photo}"
+                            src="${student.photo}"
                             width="60"
                             height="60"
                             style="border-radius:5px;cursor:pointer;"
-                            onclick="showPhoto('https://student-management-system-5xwr.onrender.com/uploads/${student.photo}')"
+                            onclick="showPhoto('${student.photo}')"
                         >
 
                         <br>
@@ -2737,9 +2783,7 @@ function loadSelectedStudentProfile() {
 
             if (student.photo) {
 
-                photo.src =
-                    "https://student-management-system-5xwr.onrender.com/uploads/"
-                    + student.photo;
+               photo.src = student.photo; 
 
             } else {
 
