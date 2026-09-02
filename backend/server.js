@@ -41,11 +41,15 @@ app.get("/cloudinary-test", async (req, res) => {
 
     } catch (error) {
 
-        console.error("========== CLOUDINARY ERROR ==========");
-        console.error(error);
-        console.error("MESSAGE:", error?.message);
-        console.error("ERROR OBJECT:", JSON.stringify(error, null, 2));
-        console.error("======================================");
+
+    console.error("========== CLOUDINARY ERROR ==========");
+    console.dir(error, { depth: null });
+
+    res.status(500).json({
+        success: false,
+        error: error
+    });
+}
 
         res.status(500).json({
             success: false,
@@ -55,7 +59,7 @@ app.get("/cloudinary-test", async (req, res) => {
             name: error?.name || null
         });
     }
-});
+);
 
 console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
 
