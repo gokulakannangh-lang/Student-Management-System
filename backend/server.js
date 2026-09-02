@@ -22,6 +22,34 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+app.get("/cloudinary-test", async (req, res) => {
+
+    try {
+
+        const result = await cloudinary.api.ping();
+
+        console.log("Cloudinary Ping:", result);
+
+        res.json({
+            success: true,
+            message: "Cloudinary Connected Successfully",
+            result: result
+        });
+
+    } catch (error) {
+
+        console.error("Cloudinary Ping Error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+            http_code: error.http_code
+        });
+
+    }
+
+});
+
 console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
 
 const storage = new CloudinaryStorage({
