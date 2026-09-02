@@ -221,6 +221,7 @@ function addStudent() {
     }
 }
   
+let selectedStudentId = null;
 
 // LOAD STUDENts
 
@@ -335,10 +336,23 @@ function addStudent() {
 
             let row = table.insertRow();
 
+            row.ondblclick = function (event) {
 
+    event.preventDefault();
+    event.stopPropagation();
 
+    document.querySelectorAll("#studentTable tr").forEach(r => {
+        r.classList.remove("selected-row");
+    });
 
-            row.insertCell(0).innerHTML =
+    row.classList.add("selected-row");
+
+    selectedStudentId = student.id;
+
+    console.log("Selected Student ID:", selectedStudentId);
+};
+
+             row.insertCell(0).innerHTML =
                 student.id;
 
             row.insertCell(1).innerHTML =
@@ -393,14 +407,20 @@ function addStudent() {
 
 
             profileCell.innerHTML =
+    `<button onclick="viewProfile(${student.id})">
+        👁 View
+    </button>
 
-                `<button onclick="viewProfile(${student.id})">
-                    👁 View
-                </button>
+    <button onclick="viewIDCard(${student.id})">
+        🪪 ID Card
+    </button>
 
-                <button onclick="viewIDCard(${student.id})">
-                    🪪 ID Card
-                </button>`;
+    ${role !== "teacher"
+        ? `<button onclick="editStudentRow(this.closest('tr'), ${student.id})">
+            ✏️ Edit
+           </button>`
+        : ""
+    }`;
 
             // PHOTO
            let photoCell = row.insertCell(17);
@@ -445,52 +465,7 @@ if (student.photo) {
         }
     `;
 }
-             // DOUBLE CLICK ID → DELETE STUDENT
-row.cells[0].ondblclick = function (event) {
 
-    event.stopPropagation();
-
-    const studentId = student.id;
-
-    const confirmDelete = confirm(
-        "Are you sure you want to delete Student ID: " + studentId + "?"
-    );
-
-    if (!confirmDelete) {
-        return;
-    }
-
-    fetch(
-        "https://student-management-system-5xwr.onrender.com/students/" +
-        studentId,
-        {
-            method: "DELETE"
-        }
-    )
-    .then(response => response.json())
-    .then(data => {
-
-        if (data.success) {
-
-            alert("Student deleted successfully ✅");
-
-            loadStudents();
-
-        } else {
-
-            alert(data.message || "Delete failed");
-
-        }
-
-    })
-    .catch(error => {
-
-        console.error("Delete Error:", error);
-
-        alert("Server error while deleting student");
-
-    });
-};
           
             // SAVE EDIT
            
@@ -665,6 +640,41 @@ function closePhoto() {
     document.getElementById("photoModal").style.display = "none";
 }
 
+// editStudentRow
+function editStudentRow(row, studentId) {
+
+    const role = localStorage.getItem("role");
+
+    if (role === "teacher") {
+        alert("Teacher cannot edit student details.");
+        return;
+    }
+
+    for (let i = 1; i <= 15; i++) {
+
+        const value = row.cells[i].innerText.trim();
+
+        const input = document.createElement("input");
+
+        input.type = "text";
+        input.value = value;
+
+        row.cells[i].innerHTML = "";
+        row.cells[i].appendChild(input);
+    }
+
+    // Date of Birth
+    row.cells[4].querySelector("input").type = "date";
+
+    // Admission Date
+    row.cells[15].querySelector("input").type = "date";
+
+    row.cells[1].querySelector("input").focus();
+
+    alert(
+        "Edit mode enabled ✏️\nPress Enter to save changes."
+    );
+}
 //saveRow
 function saveRow(id, row) {
 
@@ -3095,25 +3105,17 @@ function addTeacher() {
     });
 
 }
-//select Student record delete
-let selectedStudentId = null;
-
-function selectStudent(row, studentId) {
-
-    document.querySelectorAll("#studentTable tbody tr").forEach(r => {
-        r.classList.remove("selected-row");
-    });
-
-    // Current row select
-    row.classList.add("selected-row");
-
-    selectedStudentId = studentId;
-
-    console.log("Selected Student ID:", selectedStudentId);
-}
-
-//deleteSelectedStudent(
 function deleteSelectedStudent() {
+
+    const role = localStorage.getItem("role");
+
+    // Admin and Teacher can delete
+    if (role !== "admin" && role !== "teacher") {
+        alert("Only Admin or Teacher can delete students.");
+        return;
+    }
+
+    console.log("Delete Selected ID:", selectedStudentId);
 
     if (!selectedStudentId) {
         alert("Please double-click a student row first.");
@@ -3121,7 +3123,9 @@ function deleteSelectedStudent() {
     }
 
     const confirmDelete = confirm(
-        "Are you sure you want to delete this student?"
+        "Are you sure you want to delete Student ID: " +
+        selectedStudentId +
+        "?"
     );
 
     if (!confirmDelete) {
@@ -3132,11 +3136,16 @@ function deleteSelectedStudent() {
         "https://student-management-system-5xwr.onrender.com/students/" +
         selectedStudentId,
         {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "user-role": role
+            }
         }
     )
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
+
+        console.log("DELETE RESPONSE:", data);
 
         if (data.success) {
 
@@ -3148,8 +3157,10 @@ function deleteSelectedStudent() {
 
         } else {
 
-            alert(data.message || "Delete failed");
-
+            alert(
+                data.message ||
+                "Student delete failed"
+            );
         }
 
     })

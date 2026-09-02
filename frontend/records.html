@@ -20,15 +20,20 @@ if(localStorage.getItem("login") !== "true"){
 
 <div class="search-box">
     <input type="search" id="search" placeholder="Search Student">
-    <button onclick="searchStudent()">Search</button>
-</button>
+    <button onclick="searchStudent()">Search
+
+    </button>
       
       <select id="departmentFilter" onchange="filterStudentsByDepartment()">
         <option value="">All Departments</option>
         <option value="B.Sc Computer Science">B.Sc Computer Science</option>
         <option value="B.Sc Mathematics">B.Sc Mathematics</option>
         <option value="B.Com">B.Com</option>
-    </select>
+      </select>
+
+   <button type="button" id="deleteSelectedBtn" onclick="deleteSelectedStudent()">
+    🗑️ Delete Selected
+</button>
 
     <button onclick="window.location.href='index.html'">
         Back

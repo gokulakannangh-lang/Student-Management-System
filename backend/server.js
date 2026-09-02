@@ -1015,25 +1015,70 @@ app.delete("/marks/:id", (req, res) => {
 
 });
 
-// Delete Student API
+// ==========================================
+// DELETE STUDENT
+// ADMIN + TEACHER
+// ==========================================
+
 app.delete("/students/:id", (req, res) => {
 
     const id = req.params.id;
 
-    const sql = "DELETE FROM students WHERE id = ?";
+    // Role comes from frontend
+    const role = req.headers["user-role"];
+
+    console.log("Delete Student ID:", id);
+    console.log("Delete Role:", role);
+
+    // Admin + Teacher only
+    if (role !== "admin" && role !== "teacher") {
+
+        return res.status(403).json({
+            success: false,
+            message: "Only Admin or Teacher can delete students."
+        });
+
+    }
+
+    const sql = `
+        DELETE FROM students
+        WHERE id = ?
+    `;
 
     db.query(sql, [id], (err, result) => {
 
         if (err) {
-            console.log(err);
-            res.status(500).json({ message: "Database Error" });
-        } 
-        
-        else 
-        {
-             //saveLog("Admin", "Deleted Student ID : " + id);
-            res.json({ message: "Student Deleted Successfully" });
+
+            console.error(
+                "Delete Student Error:",
+                err
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database Error"
+            });
+
         }
+
+        if (result.affectedRows === 0) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+
+        }
+
+        console.log(
+            "Student Deleted Successfully:",
+            id
+        );
+
+        res.json({
+            success: true,
+            message: "Student Deleted Successfully"
+        });
 
     });
 
