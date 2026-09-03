@@ -422,49 +422,51 @@ let selectedStudentId = null;
         : ""
     }`;
 
-            // PHOTO
-           let photoCell = row.insertCell(17);
-      
-           const photoUrl = student.photo || "";
-      
-if (student.photo) {
+    // PHOTO
+       let photoCell = row.insertCell(17);
+  
+       const photoUrl = student.photo || "";
+  
 
-              photoCell.innerHTML = `
-        <img
-            src="${photoUrl}"
-            width="60"
-            height="60"
-            style="border-radius:5px;cursor:pointer;"
-            onclick="showPhoto('${photoUrl}')"
-            oncontextmenu="changePhoto(event, ${student.id})"
-        >
-        <br>
+          if (student.photo) {
 
-        ${
-            (role === "admin" || role === "teacher")
-            ? `<span
-                style="color:#007bff;cursor:pointer;font-weight:bold;"
-                onclick="changePhoto(event, ${student.id})">
-                ✏️ Change
-              </span>`
-            : ""
-        }
-    `;
+          photoCell.innerHTML = `
+    <img
+        src="${photoUrl}"
+        width="60"
+        height="60"
+        style="border-radius:5px;cursor:pointer;"
+        onclick="showPhoto('${photoUrl}')"
+        oncontextmenu="changePhoto(event, ${student.id})"
+    >
+    <br>
+
+    ${
+        (role === "admin" || role === "teacher")
+        ? `<span
+            style="color:#007bff;cursor:pointer;font-weight:bold;"
+            onclick="changePhoto(event, ${student.id})">
+            ✏️ Change
+          </span>`
+        : ""
+    }
+`;
 
 } else {
 
-    photoCell.innerHTML = `
-        ${
-            (role === "admin" || role === "teacher")
-            ? `<span
-                style="color:#007bff;cursor:pointer;font-weight:bold;"
-                onclick="changePhoto(event, ${student.id})">
-                ➕ Add Photo
-              </span>`
-            : `<span>No Photo</span>`
-        }
-    `;
-}
+photoCell.innerHTML = `
+    ${
+        (role === "admin" || role === "teacher")
+        ? `<span
+            style="color:#007bff;cursor:pointer;font-weight:bold;"
+            onclick="changePhoto(event, ${student.id})">
+            ➕ Add Photo
+          </span>`
+        : `<span>No Photo</span>`
+    }
+`;
+
+} 
 
           
             // SAVE EDIT
