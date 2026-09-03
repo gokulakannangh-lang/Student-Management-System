@@ -1772,69 +1772,460 @@ app.get("/dashboard/teacher-chart/:teacherId", (req, res) => {
     });
 });
 
-//dashboard/attendance-chart
+// ==========================================
+// DASHBOARD ATTENDANCE CHART
+// ADMIN + TEACHER
+// ==========================================
+
 app.get("/dashboard/attendance-chart", (req, res) => {
 
-    const sql = `
-    SELECT status, COUNT(*) AS total
-    FROM attendance
-    GROUP BY status
-    `;
+    const role =
+        req.headers["user-role"];
 
-    db.query(sql, (err, result) => {
+    const teacherId =
+        req.headers["teacher-id"];
 
-        if (err) return res.json(err);
 
-        res.json(result);
+    // ==========================================
+    // ADMIN
+    // ==========================================
 
-    });
+    if (role !== "teacher") {
 
-});
+        const sql = `
+            SELECT
+                status,
+                COUNT(*) AS total
 
-//dashboard summary
-app.get("/dashboard/summary",(req,res)=>{
+            FROM attendance
 
-    let summary={};
+            GROUP BY status
+        `;
 
-    db.query("SELECT COUNT(*) total FROM students",(err,r1)=>{
 
-        summary.students=r1[0].total;
+        db.query(
+            sql,
+            (err, result) => {
 
-        db.query("SELECT COUNT(DISTINCT department) total FROM students",(err,r2)=>{
+                if (err) {
 
-            summary.departments=r2[0].total;
+                    return res.status(500).json(err);
 
-            db.query("SELECT COUNT(*) total FROM fees WHERE status='Paid'",(err,r3)=>{
+                }
 
-                summary.paid=r3[0].total;
+                res.json(result);
 
-                db.query("SELECT COUNT(*) total FROM fees WHERE status='Pending'",(err,r4)=>{
+            }
+        );
 
-                    summary.pending=r4[0].total;
+        return;
+    }
 
-                    db.query("SELECT COUNT(*) total FROM attendance WHERE status='Present'",(err,r5)=>{
 
-                        summary.present=r5[0].total;
+    // ==========================================
+    // TEACHER
+    // ==========================================
 
-                        db.query("SELECT COUNT(*) total FROM marks WHERE grade<>'F'",(err,r6)=>{
+    if (!teacherId) {
 
-                            summary.pass=r6[0].total;
+        return res.status(400).json({
 
-                            res.json(summary);
+            success: false,
 
-                        });
-
-                    });
-
-                });
-
-            });
+            message: "Teacher ID not found"
 
         });
 
-    });
+    }
+
+
+    const sql = `
+        SELECT
+            a.status,
+            COUNT(*) AS total
+
+        FROM attendance a
+
+        INNER JOIN students s
+            ON a.student_id = s.id
+
+        INNER JOIN teacher_classes tc
+            ON s.department = tc.department
+            AND s.year = tc.year
+            AND s.college_shift = tc.college_shift
+
+        WHERE tc.teacher_id = ?
+
+        GROUP BY a.status
+    `;
+
+
+    db.query(
+        sql,
+        [teacherId],
+
+        (err, result) => {
+
+            if (err) {
+
+                console.error(
+                    "Teacher Attendance Chart Error:",
+                    err
+                );
+
+                return res.status(500).json(err);
+
+            }
+
+
+            res.json(result);
+
+        }
+    );
 
 });
+
+// ==========================================
+// DASHBOARD SUMMARY
+// ADMIN + TEACHER
+// ==========================================
+
+app.get("/dashboard/summary", (req, res) => {
+
+    const role = req.headers["user-role"];
+    const teacherId = req.headers["teacher-id"];
+
+
+    // ==========================================
+    // ADMIN
+    // ==========================================
+
+    if (role !== "teacher") {
+
+        let summary = {};
+
+
+        db.query(
+            "SELECT COUNT(*) AS total FROM students",
+            (err, r1) => {
+
+                if (err) {
+                    return res.status(500).json(err);
+                }
+
+                summary.students = r1[0].total;
+
+
+                db.query(
+                    "SELECT COUNT(DISTINCT department) AS total FROM students",
+                    (err, r2) => {
+
+                        if (err) {
+                            return res.status(500).json(err);
+                        }
+
+                        summary.departments =
+                            r2[0].total;
+
+
+                        db.query(
+                            "SELECT COUNT(*) AS total FROM fees WHERE status='Paid'",
+                            (err, r3) => {
+
+                                if (err) {
+                                    return res.status(500).json(err);
+                                }
+
+                                summary.paid =
+                                    r3[0].total;
+
+
+                                db.query(
+                                    "SELECT COUNT(*) AS total FROM fees WHERE status='Pending'",
+                                    (err, r4) => {
+
+                                        if (err) {
+                                            return res.status(500).json(err);
+                                        }
+
+                                        summary.pending =
+                                            r4[0].total;
+
+
+                                        db.query(
+                                            "SELECT COUNT(*) AS total FROM attendance WHERE status='Present'",
+                                            (err, r5) => {
+
+                                                if (err) {
+                                                    return res.status(500).json(err);
+                                                }
+
+                                                summary.present =
+                                                    r5[0].total;
+
+
+                                                db.query(
+                                                    "SELECT COUNT(*) AS total FROM marks WHERE grade <> 'F'",
+                                                    (err, r6) => {
+
+                                                        if (err) {
+                                                            return res.status(500).json(err);
+                                                        }
+
+                                                        summary.pass =
+                                                            r6[0].total;
+
+
+                                                        res.json(
+                                                            summary
+                                                        );
+
+                                                    }
+                                                );
+
+                                            }
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+        return;
+    }
+
+
+    // ==========================================
+    // TEACHER
+    // ==========================================
+
+    if (!teacherId) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: "Teacher ID not found"
+
+        });
+
+    }
+
+
+    // ==========================================
+    // TEACHER STUDENTS
+    // ==========================================
+
+    let summary = {};
+
+
+    // ==========================================
+    // TOTAL STUDENTS
+    // TEACHER CLASSES ONLY
+    // ==========================================
+
+    db.query(
+        `
+        SELECT COUNT(DISTINCT s.id) AS total
+
+        FROM students s
+
+        INNER JOIN teacher_classes tc
+
+            ON s.department = tc.department
+            AND s.year = tc.year
+            AND s.college_shift = tc.college_shift
+
+        WHERE tc.teacher_id = ?
+        `,
+        [teacherId],
+
+        (err, r1) => {
+
+            if (err) {
+
+                console.error(
+                    "Teacher Student Count Error:",
+                    err
+                );
+
+                return res.status(500).json(err);
+
+            }
+
+
+            summary.students =
+                r1[0].total;
+
+
+            // Teacher department/class count
+            summary.departments = 1;
+
+
+            // ==========================================
+            // FEES PAID
+            // ==========================================
+
+            db.query(
+                `
+                SELECT COUNT(*) AS total
+
+                FROM fees f
+
+                INNER JOIN students s
+                    ON f.student_id = s.id
+
+                INNER JOIN teacher_classes tc
+                    ON s.department = tc.department
+                    AND s.year = tc.year
+                    AND s.college_shift = tc.college_shift
+
+                WHERE tc.teacher_id = ?
+
+                AND f.status = 'Paid'
+                `,
+                [teacherId],
+
+                (err, r3) => {
+
+                    if (err) {
+                        return res.status(500).json(err);
+                    }
+
+                    summary.paid =
+                        r3[0].total;
+
+
+                    // ==========================================
+                    // FEES PENDING
+                    // ==========================================
+
+                    db.query(
+                        `
+                        SELECT COUNT(*) AS total
+
+                        FROM fees f
+
+                        INNER JOIN students s
+                            ON f.student_id = s.id
+
+                        INNER JOIN teacher_classes tc
+                            ON s.department = tc.department
+                            AND s.year = tc.year
+                            AND s.college_shift = tc.college_shift
+
+                        WHERE tc.teacher_id = ?
+
+                        AND f.status = 'Pending'
+                        `,
+                        [teacherId],
+
+                        (err, r4) => {
+
+                            if (err) {
+                                return res.status(500).json(err);
+                            }
+
+                            summary.pending =
+                                r4[0].total;
+
+
+                            // ==========================================
+                            // PRESENT
+                            // ==========================================
+
+                            db.query(
+                                `
+                                SELECT COUNT(*) AS total
+
+                                FROM attendance a
+
+                                INNER JOIN students s
+                                    ON a.student_id = s.id
+
+                                INNER JOIN teacher_classes tc
+                                    ON s.department = tc.department
+                                    AND s.year = tc.year
+                                    AND s.college_shift = tc.college_shift
+
+                                WHERE tc.teacher_id = ?
+
+                                AND a.status = 'Present'
+                                `,
+                                [teacherId],
+
+                                (err, r5) => {
+
+                                    if (err) {
+                                        return res.status(500).json(err);
+                                    }
+
+                                    summary.present =
+                                        r5[0].total;
+
+
+                                    // ==========================================
+                                    // PASS
+                                    // ==========================================
+
+                                    db.query(
+                                        `
+                                        SELECT COUNT(*) AS total
+
+                                        FROM marks m
+
+                                        INNER JOIN students s
+                                            ON m.student_id = s.id
+
+                                        INNER JOIN teacher_classes tc
+                                            ON s.department = tc.department
+                                            AND s.year = tc.year
+                                            AND s.college_shift = tc.college_shift
+
+                                        WHERE tc.teacher_id = ?
+
+                                        AND m.grade <> 'F'
+                                        `,
+                                        [teacherId],
+
+                                        (err, r6) => {
+
+                                            if (err) {
+                                                return res.status(500).json(err);
+                                            }
+
+                                            summary.pass =
+                                                r6[0].total;
+
+
+                                            res.json(
+                                                summary
+                                            );
+
+                                        }
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+});
+                    
 
 ///exportstudents gets API
 app.get("/export/students", async (req, res) => {

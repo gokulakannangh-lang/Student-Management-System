@@ -1584,16 +1584,7 @@ function searchFees() {
     }
 
 }
-//exportpdf
-function exportPDF() {
-
-    window.open(
-        "https://student-management-system-5xwr.onrender.com/students/pdf",
-        "_blank"
-    );
-
-}
-//exportpdf 2
+//exportpdf 
 function exportPDF() {
 
     const { jsPDF } = window.jspdf;
@@ -1856,14 +1847,6 @@ function loadYearChart() {
 }
 if(document.getElementById("yearChart")){
     loadYearChart();
-}
-//viewIDcard
-function viewIDCard(id){
-
-    localStorage.setItem("studentId", id);
-    localStorage.setItem("studentId",id);
-    window.location.href="idcard.html";
-
 }
 //function viewIDCard() 
 function viewIDCard(id){
@@ -2160,85 +2143,6 @@ function uploadLogo(){
 
 }
 
-//loadDepartmentChart
-function loadDepartmentChart() {
-
-    const role = localStorage.getItem("role");
-
-    let apiUrl = "https://student-management-system-5xwr.onrender.com/dashboard/chart";
-
-    // Teacher → அவருடைய department மட்டும்
-    if (role === "teacher") {
-
-        const teacherId =
-            localStorage.getItem("teacherId");
-
-        if (!teacherId) {
-            console.log("Teacher ID not found");
-            return;
-        }
-
-        apiUrl =
-            "https://student-management-system-5xwr.onrender.com/dashboard/teacher-chart/"
-            + teacherId;
-    }
-
-    fetch(apiUrl)
-
-    .then(res => res.json())
-
-    .then(data => {
-
-        console.log("Department Chart Data:", data);
-
-        let labels = [];
-        let totals = [];
-
-        data.forEach(item => {
-
-            labels.push(item.department);
-            totals.push(item.total);
-
-        });
-
-        new Chart(
-            document.getElementById("departmentChart"),
-            {
-                type: "bar",
-
-                data: {
-                    labels: labels,
-
-                    datasets: [{
-                        label: "Students",
-                        data: totals,
-                        borderWidth: 1
-                    }]
-                },
-
-                options: {
-                    responsive: true,
-
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            }
-        );
-
-    })
-
-    .catch(err =>
-        console.log("Department Chart Error:", err)
-    );
-}
-
-if (document.getElementById("departmentChart")) {
-    loadDepartmentChart();
-}
-
 //loadYearChart
 function loadYearChart() {
 
@@ -2286,11 +2190,6 @@ function loadYearChart() {
 
     .catch(err => console.log(err));
 
-}
-
-//loadYearChart
-if (document.getElementById("yearChart")) {
-    loadYearChart();
 }
 
 //loadAttendanceChart
@@ -2346,30 +2245,6 @@ function loadAttendanceChart() {
 if (document.getElementById("attendanceChart")) {
     loadAttendanceChart();
 }
-
-//loadDashboardSummary
-function loadDashboardSummary(){
-    fetch("https://student-management-system-5xwr.onrender.com/dashboard/summary")
-
-    .then(res=>res.json())
-
-    .then(data=>{
-
-        document.getElementById("totalStudents").innerText=data.students;
-        document.getElementById("totalDepartments").innerText=data.departments;
-        document.getElementById("feesPaid").innerText=data.paid;
-        document.getElementById("feesDue").innerText=data.pending;
-        document.getElementById("presentToday").innerText=data.present;
-        document.getElementById("passStudents").innerText=data.pass;
-
-    });
-
-}
-
-if(document.getElementById("feesPaid")){
-    loadDashboardSummary();
-}
-
 //exportstudents
 function exportStudents() {
     window.open("https://student-management-system-5xwr.onrender.com/export/students");
