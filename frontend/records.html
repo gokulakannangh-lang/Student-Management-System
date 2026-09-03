@@ -79,8 +79,10 @@ if(localStorage.getItem("login") !== "true"){
 
 <!-- Photo Popup -->
 <div id="photoModal" class="modal" onclick="closePhoto()">
+
     <span class="close">&times;</span>
-    <img id="popupPhoto" class="modal-content">
+
+    <img id="popupPhoto" class="modal-content" onclick="event.stopPropagation()">
 </div>
 
 <input

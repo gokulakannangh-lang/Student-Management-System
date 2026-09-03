@@ -631,16 +631,26 @@ function cancelForm() {
     loadStudents();
 }
 
-   
 // Photo Popup
+
 function showPhoto(photo) {
-    document.getElementById("photoModal").style.display = "block";
-    document.getElementById("popupPhoto").src = photo;
+
+    const modal = document.getElementById("photoModal");
+    const popupPhoto = document.getElementById("popupPhoto");
+
+    popupPhoto.src = photo;
+
+    // Center modal
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
 }
 
 function closePhoto() {
+
     document.getElementById("photoModal").style.display = "none";
-}
+}   
+
 
 // editStudentRow
 function editStudentRow(row, studentId) {
