@@ -1895,7 +1895,6 @@ app.get("/dashboard/summary", (req, res) => {
     const role = req.headers["user-role"];
     const teacherId = req.headers["teacher-id"];
 
-
     // ==========================================
     // ADMIN
     // ==========================================
@@ -1904,7 +1903,7 @@ app.get("/dashboard/summary", (req, res) => {
 
         let summary = {};
 
-
+        // TOTAL STUDENTS
         db.query(
             "SELECT COUNT(*) AS total FROM students",
             (err, r1) => {
@@ -1916,6 +1915,7 @@ app.get("/dashboard/summary", (req, res) => {
                 summary.students = r1[0].total;
 
 
+                // DEPARTMENTS
                 db.query(
                     "SELECT COUNT(DISTINCT department) AS total FROM students",
                     (err, r2) => {
@@ -1924,10 +1924,10 @@ app.get("/dashboard/summary", (req, res) => {
                             return res.status(500).json(err);
                         }
 
-                        summary.departments =
-                            r2[0].total;
+                        summary.departments = r2[0].total;
 
 
+                        // FEES PAID
                         db.query(
                             "SELECT COUNT(*) AS total FROM fees WHERE status='Paid'",
                             (err, r3) => {
@@ -1936,10 +1936,10 @@ app.get("/dashboard/summary", (req, res) => {
                                     return res.status(500).json(err);
                                 }
 
-                                summary.paid =
-                                    r3[0].total;
+                                summary.paid = r3[0].total;
 
 
+                                // FEES PENDING
                                 db.query(
                                     "SELECT COUNT(*) AS total FROM fees WHERE status='Pending'",
                                     (err, r4) => {
@@ -1948,10 +1948,10 @@ app.get("/dashboard/summary", (req, res) => {
                                             return res.status(500).json(err);
                                         }
 
-                                        summary.pending =
-                                            r4[0].total;
+                                        summary.pending = r4[0].total;
 
 
+                                        // PRESENT
                                         db.query(
                                             "SELECT COUNT(*) AS total FROM attendance WHERE status='Present'",
                                             (err, r5) => {
@@ -1960,24 +1960,36 @@ app.get("/dashboard/summary", (req, res) => {
                                                     return res.status(500).json(err);
                                                 }
 
-                                                summary.present =
-                                                    r5[0].total;
+                                                summary.present = r5[0].total;
 
 
+                                                // MARKS RECORDS
                                                 db.query(
-                                                    "SELECT COUNT(*) AS total FROM marks WHERE grade <> 'F'",
+                                                    "SELECT COUNT(*) AS total FROM marks",
                                                     (err, r6) => {
 
                                                         if (err) {
                                                             return res.status(500).json(err);
                                                         }
 
-                                                        summary.pass =
+                                                        summary.marks =
                                                             r6[0].total;
 
+                                                        // Keep pass also
+                                                        db.query(
+                                                            "SELECT COUNT(*) AS total FROM marks WHERE grade <> 'F'",
+                                                            (err, r7) => {
 
-                                                        res.json(
-                                                            summary
+                                                                if (err) {
+                                                                    return res.status(500).json(err);
+                                                                }
+
+                                                                summary.pass =
+                                                                    r7[0].total;
+
+                                                                res.json(summary);
+
+                                                            }
                                                         );
 
                                                     }
@@ -2009,41 +2021,33 @@ app.get("/dashboard/summary", (req, res) => {
     if (!teacherId) {
 
         return res.status(400).json({
-
             success: false,
-
             message: "Teacher ID not found"
-
         });
 
     }
 
-
-    // ==========================================
-    // TEACHER STUDENTS
-    // ==========================================
 
     let summary = {};
 
 
     // ==========================================
     // TOTAL STUDENTS
-    // TEACHER CLASSES ONLY
+    // ASSIGNED CLASSES ONLY
     // ==========================================
 
     db.query(
         `
-        SELECT COUNT(DISTINCT s.id) AS total
-
+        SELECT COUNT(*) AS total
         FROM students s
-
-        INNER JOIN teacher_classes tc
-
-            ON s.department = tc.department
-            AND s.year = tc.year
-            AND s.college_shift = tc.college_shift
-
-        WHERE tc.teacher_id = ?
+        WHERE EXISTS (
+            SELECT 1
+            FROM teacher_classes tc
+            WHERE tc.teacher_id = ?
+              AND tc.department = s.department
+              AND tc.year = s.year
+              AND tc.college_shift = s.college_shift
+        )
         `,
         [teacherId],
 
@@ -2060,153 +2064,222 @@ app.get("/dashboard/summary", (req, res) => {
 
             }
 
-
-            summary.students =
-                r1[0].total;
-
-
-            // Teacher department/class count
-            summary.departments = 1;
+            summary.students = r1[0].total;
 
 
             // ==========================================
-            // FEES PAID
+            // DEPARTMENTS
+            // ASSIGNED CLASSES ONLY
             // ==========================================
 
             db.query(
                 `
-                SELECT COUNT(*) AS total
-
-                FROM fees f
-
-                INNER JOIN students s
-                    ON f.student_id = s.id
-
-                INNER JOIN teacher_classes tc
-                    ON s.department = tc.department
-                    AND s.year = tc.year
-                    AND s.college_shift = tc.college_shift
-
-                WHERE tc.teacher_id = ?
-
-                AND f.status = 'Paid'
+                SELECT COUNT(DISTINCT department) AS total
+                FROM teacher_classes
+                WHERE teacher_id = ?
                 `,
                 [teacherId],
 
-                (err, r3) => {
+                (err, r2) => {
 
                     if (err) {
                         return res.status(500).json(err);
                     }
 
-                    summary.paid =
-                        r3[0].total;
+                    summary.departments =
+                        r2[0].total;
 
 
                     // ==========================================
-                    // FEES PENDING
+                    // FEES PAID
+                    // ASSIGNED CLASS STUDENTS ONLY
                     // ==========================================
 
                     db.query(
                         `
                         SELECT COUNT(*) AS total
-
                         FROM fees f
-
-                        INNER JOIN students s
-                            ON f.student_id = s.id
-
-                        INNER JOIN teacher_classes tc
-                            ON s.department = tc.department
-                            AND s.year = tc.year
-                            AND s.college_shift = tc.college_shift
-
-                        WHERE tc.teacher_id = ?
-
-                        AND f.status = 'Pending'
+                        WHERE f.status = 'Paid'
+                        AND EXISTS (
+                            SELECT 1
+                            FROM students s
+                            WHERE s.id = f.student_id
+                            AND EXISTS (
+                                SELECT 1
+                                FROM teacher_classes tc
+                                WHERE tc.teacher_id = ?
+                                  AND tc.department = s.department
+                                  AND tc.year = s.year
+                                  AND tc.college_shift = s.college_shift
+                            )
+                        )
                         `,
                         [teacherId],
 
-                        (err, r4) => {
+                        (err, r3) => {
 
                             if (err) {
                                 return res.status(500).json(err);
                             }
 
-                            summary.pending =
-                                r4[0].total;
+                            summary.paid =
+                                r3[0].total;
 
 
                             // ==========================================
-                            // PRESENT
+                            // FEES PENDING
+                            // ASSIGNED CLASS STUDENTS ONLY
                             // ==========================================
 
                             db.query(
                                 `
                                 SELECT COUNT(*) AS total
-
-                                FROM attendance a
-
-                                INNER JOIN students s
-                                    ON a.student_id = s.id
-
-                                INNER JOIN teacher_classes tc
-                                    ON s.department = tc.department
-                                    AND s.year = tc.year
-                                    AND s.college_shift = tc.college_shift
-
-                                WHERE tc.teacher_id = ?
-
-                                AND a.status = 'Present'
+                                FROM fees f
+                                WHERE f.status = 'Pending'
+                                AND EXISTS (
+                                    SELECT 1
+                                    FROM students s
+                                    WHERE s.id = f.student_id
+                                    AND EXISTS (
+                                        SELECT 1
+                                        FROM teacher_classes tc
+                                        WHERE tc.teacher_id = ?
+                                          AND tc.department = s.department
+                                          AND tc.year = s.year
+                                          AND tc.college_shift = s.college_shift
+                                    )
+                                )
                                 `,
                                 [teacherId],
 
-                                (err, r5) => {
+                                (err, r4) => {
 
                                     if (err) {
                                         return res.status(500).json(err);
                                     }
 
-                                    summary.present =
-                                        r5[0].total;
+                                    summary.pending =
+                                        r4[0].total;
 
 
                                     // ==========================================
-                                    // PASS
+                                    // ATTENDANCE PRESENT
+                                    // ASSIGNED CLASS STUDENTS ONLY
                                     // ==========================================
 
                                     db.query(
                                         `
                                         SELECT COUNT(*) AS total
-
-                                        FROM marks m
-
-                                        INNER JOIN students s
-                                            ON m.student_id = s.id
-
-                                        INNER JOIN teacher_classes tc
-                                            ON s.department = tc.department
-                                            AND s.year = tc.year
-                                            AND s.college_shift = tc.college_shift
-
-                                        WHERE tc.teacher_id = ?
-
-                                        AND m.grade <> 'F'
+                                        FROM attendance a
+                                        WHERE a.status = 'Present'
+                                        AND EXISTS (
+                                            SELECT 1
+                                            FROM students s
+                                            WHERE s.id = a.student_id
+                                            AND EXISTS (
+                                                SELECT 1
+                                                FROM teacher_classes tc
+                                                WHERE tc.teacher_id = ?
+                                                  AND tc.department = s.department
+                                                  AND tc.year = s.year
+                                                  AND tc.college_shift = s.college_shift
+                                            )
+                                        )
                                         `,
                                         [teacherId],
 
-                                        (err, r6) => {
+                                        (err, r5) => {
 
                                             if (err) {
                                                 return res.status(500).json(err);
                                             }
 
-                                            summary.pass =
-                                                r6[0].total;
+                                            summary.present =
+                                                r5[0].total;
 
 
-                                            res.json(
-                                                summary
+                                            // ==========================================
+                                            // MARKS RECORDS
+                                            // ASSIGNED CLASS STUDENTS ONLY
+                                            // ==========================================
+
+                                            db.query(
+                                                `
+                                                SELECT COUNT(*) AS total
+                                                FROM marks m
+                                                WHERE EXISTS (
+                                                    SELECT 1
+                                                    FROM students s
+                                                    WHERE s.id = m.student_id
+                                                    AND EXISTS (
+                                                        SELECT 1
+                                                        FROM teacher_classes tc
+                                                        WHERE tc.teacher_id = ?
+                                                          AND tc.department = s.department
+                                                          AND tc.year = s.year
+                                                          AND tc.college_shift = s.college_shift
+                                                    )
+                                                )
+                                                `,
+                                                [teacherId],
+
+                                                (err, r6) => {
+
+                                                    if (err) {
+                                                        return res.status(500).json(err);
+                                                    }
+
+                                                    summary.marks =
+                                                        r6[0].total;
+
+
+                                                    // ==========================================
+                                                    // PASS STUDENTS / MARKS
+                                                    // ==========================================
+
+                                                    db.query(
+                                                        `
+                                                        SELECT COUNT(*) AS total
+                                                        FROM marks m
+                                                        WHERE m.grade <> 'F'
+                                                        AND EXISTS (
+                                                            SELECT 1
+                                                            FROM students s
+                                                            WHERE s.id = m.student_id
+                                                            AND EXISTS (
+                                                                SELECT 1
+                                                                FROM teacher_classes tc
+                                                                WHERE tc.teacher_id = ?
+                                                                  AND tc.department = s.department
+                                                                  AND tc.year = s.year
+                                                                  AND tc.college_shift = s.college_shift
+                                                            )
+                                                        )
+                                                        `,
+                                                        [teacherId],
+
+                                                        (err, r7) => {
+
+                                                            if (err) {
+                                                                return res.status(500).json(err);
+                                                            }
+
+                                                            summary.pass =
+                                                                r7[0].total;
+
+
+                                                            console.log(
+                                                                "Teacher Dashboard Summary:",
+                                                                summary
+                                                            );
+
+
+                                                            res.json(summary);
+
+                                                        }
+                                                    );
+
+                                                }
                                             );
 
                                         }
