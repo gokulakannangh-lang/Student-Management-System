@@ -1886,6 +1886,52 @@ app.get("/dashboard/attendance-chart", (req, res) => {
 });
 
 // ==========================================
+// ADMIN YEAR WISE STUDENTS
+// ==========================================
+
+app.get("/dashboard/year-chart", (req, res) => {
+
+    db.query(
+        `
+        SELECT
+            year,
+            COUNT(*) AS total
+        FROM students
+        GROUP BY year
+        ORDER BY
+            CASE year
+                WHEN '1st Year' THEN 1
+                WHEN '2nd Year' THEN 2
+                WHEN '3rd Year' THEN 3
+                WHEN '4th Year' THEN 4
+                ELSE 5
+            END
+        `,
+        (err, rows) => {
+
+            if (err) {
+
+                console.error(
+                    "Admin Year Chart Error:",
+                    err
+                );
+
+                return res.status(500).json(err);
+            }
+
+            console.log(
+                "Admin Year Chart:",
+                rows
+            );
+
+            res.json(rows);
+
+        }
+    );
+
+});
+
+// ==========================================
 // DASHBOARD SUMMARY
 // ADMIN + TEACHER
 // ==========================================
