@@ -98,7 +98,7 @@ function loadDashboardSummary() {
 
             if (totalMarks) {
                 totalMarks.textContent =
-                    data.pass || 0;
+                    data.marks || 0;
             }
 
         })
@@ -215,8 +215,6 @@ function loadAttendancePercentage() {
 
 }
 
-
-
 // ==========================================
 // YEAR WISE STUDENTS
 // ==========================================
@@ -226,25 +224,23 @@ function loadYearWiseStudents() {
     const role = localStorage.getItem("role");
     const teacherId = localStorage.getItem("teacherId");
 
-
-    // ADMIN
     let apiUrl =
         "https://student-management-system-5xwr.onrender.com/students";
 
 
-    // TEACHER
+    // ==========================================
+    // TEACHER → ASSIGNED STUDENTS
+    // ==========================================
+
     if (role === "teacher") {
 
         if (!teacherId) {
 
-            console.error(
-                "Teacher ID not found"
-            );
+            console.error("Teacher ID not found");
 
             return;
 
         }
-
 
         apiUrl =
             "https://student-management-system-5xwr.onrender.com/teacher-students/"
@@ -259,9 +255,7 @@ function loadYearWiseStudents() {
 
             if (!res.ok) {
 
-                throw new Error(
-                    "Students API Error"
-                );
+                throw new Error("Students API Error");
 
             }
 
@@ -269,13 +263,24 @@ function loadYearWiseStudents() {
 
         })
 
-        .then(students => {
+        .then(result => {
 
-            console.log(
-                "Year Wise Students:",
-                students
-            );
+            console.log("Teacher Students API:", result);
 
+
+            // ==========================================
+            // HANDLE ARRAY OR OBJECT RESPONSE
+            // ==========================================
+
+            const students =
+                Array.isArray(result)
+                    ? result
+                    : (result.students || result.data || []);
+
+
+            console.log("Students used for Year Wise:",students);
+             console.log("First Student:", students[0]);
+            console.log("First Student Year:", students[0]?.year);
 
             let firstYear = 0;
             let secondYear = 0;
@@ -285,31 +290,30 @@ function loadYearWiseStudents() {
 
             students.forEach(student => {
 
-                if (student.year === "1st Year") {
+                const year =
+                    String(student.year || "")
+                        .trim();
+
+
+                if (year === "1st Year") {
 
                     firstYear++;
 
                 }
 
-                else if (
-                    student.year === "2nd Year"
-                ) {
+                else if (year === "2nd Year") {
 
                     secondYear++;
 
                 }
 
-                else if (
-                    student.year === "3rd Year"
-                ) {
+                else if (year === "3rd Year") {
 
                     thirdYear++;
 
                 }
 
-                else if (
-                    student.year === "4th Year"
-                ) {
+                else if (year === "4th Year") {
 
                     fourthYear++;
 
@@ -318,11 +322,12 @@ function loadYearWiseStudents() {
             });
 
 
-            // 1ST YEAR
+            // ==========================================
+            // UPDATE DASHBOARD
+            // ==========================================
+
             const firstYearCount =
-                document.getElementById(
-                    "firstYearCount"
-                );
+                document.getElementById("firstYearCount");
 
             if (firstYearCount) {
 
@@ -332,11 +337,8 @@ function loadYearWiseStudents() {
             }
 
 
-            // 2ND YEAR
             const secondYearCount =
-                document.getElementById(
-                    "secondYearCount"
-                );
+                document.getElementById("secondYearCount");
 
             if (secondYearCount) {
 
@@ -346,11 +348,8 @@ function loadYearWiseStudents() {
             }
 
 
-            // 3RD YEAR
             const thirdYearCount =
-                document.getElementById(
-                    "thirdYearCount"
-                );
+                document.getElementById("thirdYearCount");
 
             if (thirdYearCount) {
 
@@ -360,11 +359,8 @@ function loadYearWiseStudents() {
             }
 
 
-            // 4TH YEAR
             const fourthYearCount =
-                document.getElementById(
-                    "fourthYearCount"
-                );
+                document.getElementById("fourthYearCount");
 
             if (fourthYearCount) {
 
@@ -372,6 +368,17 @@ function loadYearWiseStudents() {
                     fourthYear;
 
             }
+
+
+            console.log(
+                "Year Wise:",
+                {
+                    firstYear,
+                    secondYear,
+                    thirdYear,
+                    fourthYear
+                }
+            );
 
         })
 
@@ -385,8 +392,6 @@ function loadYearWiseStudents() {
         });
 
 }
-
-
 
 // ==========================================
 // DEPARTMENT WISE CHART
