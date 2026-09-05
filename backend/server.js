@@ -2344,9 +2344,184 @@ app.get("/dashboard/summary", (req, res) => {
     );
 
 });
-                    
+// ==========================================
+// ADMIN - DEPARTMENT WISE STUDENTS
+// ==========================================
 
-///exportstudents gets API
+app.get("/dashboard/chart", (req, res) => {
+
+    const sql = `
+        SELECT
+            department,
+            COUNT(DISTINCT id) AS total
+        FROM students
+        WHERE department IS NOT NULL
+          AND department <> ''
+        GROUP BY department
+        ORDER BY department ASC
+    `;
+
+    db.query(sql, (err, rows) => {
+
+        if (err) {
+            console.error("Admin Department Chart Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database Error"
+            });
+        }
+
+        res.json(rows);
+    });
+
+});
+
+
+// ==========================================
+// ADMIN - YEAR WISE STUDENTS
+// ==========================================
+
+app.get("/dashboard/year-chart", (req, res) => {
+
+    const sql = `
+        SELECT
+            year,
+            COUNT(DISTINCT id) AS total
+        FROM students
+        WHERE year IS NOT NULL
+          AND year <> ''
+        GROUP BY year
+        ORDER BY CASE year
+            WHEN '1st Year' THEN 1
+            WHEN '2nd Year' THEN 2
+            WHEN '3rd Year' THEN 3
+            WHEN '4th Year' THEN 4
+            ELSE 5
+        END
+    `;
+
+    db.query(sql, (err, rows) => {
+
+        if (err) {
+            console.error("Admin Year Chart Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database Error"
+            });
+        }
+
+        res.json(rows);
+    });
+
+});
+
+
+// ==========================================
+// TEACHER - DEPARTMENT WISE STUDENTS
+// ==========================================
+
+app.get("/dashboard/teacher-chart/:teacherId", (req, res) => {
+
+    const teacherId = req.params.teacherId;
+
+    if (!teacherId) {
+        return res.status(400).json({
+            success: false,
+            message: "Teacher ID required"
+        });
+    }
+
+    const sql = `
+        SELECT
+            s.department,
+            COUNT(DISTINCT s.id) AS total
+        FROM students s
+
+        INNER JOIN teacher_classes tc
+            ON s.department = tc.department
+            AND s.year = tc.year
+            AND s.college_shift = tc.college_shift
+
+        WHERE tc.teacher_id = ?
+
+        GROUP BY s.department
+        ORDER BY s.department ASC
+    `;
+
+    db.query(sql, [teacherId], (err, rows) => {
+
+        if (err) {
+            console.error("Teacher Department Chart Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database Error"
+            });
+        }
+
+        res.json(rows);
+    });
+
+});
+
+
+// ==========================================
+// TEACHER - YEAR WISE STUDENTS
+// ==========================================
+
+app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
+
+    const teacherId = req.params.teacherId;
+
+    if (!teacherId) {
+        return res.status(400).json({
+            success: false,
+            message: "Teacher ID required"
+        });
+    }
+
+    const sql = `
+        SELECT
+            s.year,
+            COUNT(DISTINCT s.id) AS total
+        FROM students s
+
+        INNER JOIN teacher_classes tc
+            ON s.department = tc.department
+            AND s.year = tc.year
+            AND s.college_shift = tc.college_shift
+
+        WHERE tc.teacher_id = ?
+
+        GROUP BY s.year
+        ORDER BY CASE s.year
+            WHEN '1st Year' THEN 1
+            WHEN '2nd Year' THEN 2
+            WHEN '3rd Year' THEN 3
+            WHEN '4th Year' THEN 4
+            ELSE 5
+        END
+    `;
+
+    db.query(sql, [teacherId], (err, rows) => {
+
+        if (err) {
+            console.error("Teacher Year Chart Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Database Error"
+            });
+        }
+
+        res.json(rows);
+    });
+
+});
+
+//exportstudents gets API
 app.get("/export/students", async (req, res) => {
 
     db.query("SELECT * FROM students", async (err, result) => {

@@ -221,31 +221,29 @@ function loadAttendancePercentage() {
 
 function loadYearWiseStudents() {
 
-    const role = localStorage.getItem("role");
-    const teacherId = localStorage.getItem("teacherId");
+    const role =
+        localStorage.getItem("role");
 
     let apiUrl =
-        "https://student-management-system-5xwr.onrender.com/students";
+        "https://student-management-system-5xwr.onrender.com/dashboard/year-chart";
 
 
-    // ==========================================
-    // TEACHER → ASSIGNED STUDENTS
-    // ==========================================
-
+    // TEACHER
     if (role === "teacher") {
+
+        const teacherId =
+            localStorage.getItem("teacherId");
 
         if (!teacherId) {
 
             console.error("Teacher ID not found");
 
             return;
-
         }
 
         apiUrl =
-            "https://student-management-system-5xwr.onrender.com/teacher-students/"
-            + teacherId;
-
+            "https://student-management-system-5xwr.onrender.com/dashboard/teacher-year-chart/"
+            + encodeURIComponent(teacherId);
     }
 
 
@@ -254,33 +252,22 @@ function loadYearWiseStudents() {
         .then(res => {
 
             if (!res.ok) {
-
-                throw new Error("Students API Error");
-
+                throw new Error(
+                    "Year Chart API Error: " + res.status
+                );
             }
 
             return res.json();
 
         })
 
-        .then(result => {
+        .then(data => {
 
-            console.log("Teacher Students API:", result);
+            console.log(
+                "Year Wise API Data:",
+                data
+            );
 
-
-            // ==========================================
-            // HANDLE ARRAY OR OBJECT RESPONSE
-            // ==========================================
-
-            const students =
-                Array.isArray(result)
-                    ? result
-                    : (result.students || result.data || []);
-
-
-            console.log("Students used for Year Wise:",students);
-             console.log("First Student:", students[0]);
-            console.log("First Student Year:", students[0]?.year);
 
             let firstYear = 0;
             let secondYear = 0;
@@ -288,90 +275,76 @@ function loadYearWiseStudents() {
             let fourthYear = 0;
 
 
-            students.forEach(student => {
+            if (!Array.isArray(data)) {
+
+                console.error(
+                    "Invalid Year Chart Data:",
+                    data
+                );
+
+                return;
+            }
+
+
+            data.forEach(item => {
 
                 const year =
-                    String(student.year || "")
+                    String(item.year || "")
                         .trim();
+
+                const total =
+                    Number(item.total || 0);
 
 
                 if (year === "1st Year") {
 
-                    firstYear++;
+                    firstYear = total;
 
                 }
 
                 else if (year === "2nd Year") {
 
-                    secondYear++;
+                    secondYear = total;
 
                 }
 
                 else if (year === "3rd Year") {
 
-                    thirdYear++;
+                    thirdYear = total;
 
                 }
 
                 else if (year === "4th Year") {
 
-                    fourthYear++;
+                    fourthYear = total;
 
                 }
 
             });
 
 
-            // ==========================================
-            // UPDATE DASHBOARD
-            // ==========================================
-
-            const firstYearCount =
-                document.getElementById("firstYearCount");
-
-            if (firstYearCount) {
-
-                firstYearCount.textContent =
-                    firstYear;
-
-            }
+            document.getElementById(
+                "firstYearCount"
+            ).textContent = firstYear;
 
 
-            const secondYearCount =
-                document.getElementById("secondYearCount");
-
-            if (secondYearCount) {
-
-                secondYearCount.textContent =
-                    secondYear;
-
-            }
+            document.getElementById(
+                "secondYearCount"
+            ).textContent = secondYear;
 
 
-            const thirdYearCount =
-                document.getElementById("thirdYearCount");
-
-            if (thirdYearCount) {
-
-                thirdYearCount.textContent =
-                    thirdYear;
-
-            }
+            document.getElementById(
+                "thirdYearCount"
+            ).textContent = thirdYear;
 
 
-            const fourthYearCount =
-                document.getElementById("fourthYearCount");
-
-            if (fourthYearCount) {
-
-                fourthYearCount.textContent =
-                    fourthYear;
-
-            }
+            document.getElementById(
+                "fourthYearCount"
+            ).textContent = fourthYear;
 
 
             console.log(
-                "Year Wise:",
+                "Final Year Wise:",
                 {
                     firstYear,
                     secondYear,
@@ -406,12 +379,11 @@ function loadDepartmentChart() {
         localStorage.getItem("role");
 
 
-    // ADMIN API
     let apiUrl =
         "https://student-management-system-5xwr.onrender.com/dashboard/chart";
 
 
-    // TEACHER API
+    // TEACHER
     if (role === "teacher") {
 
         const teacherId =
@@ -425,14 +397,12 @@ function loadDepartmentChart() {
             );
 
             return;
-
         }
 
 
         apiUrl =
             "https://student-management-system-5xwr.onrender.com/dashboard/teacher-chart/"
-            + teacherId;
-
+            + encodeURIComponent(teacherId);
     }
 
 
@@ -443,9 +413,9 @@ function loadDepartmentChart() {
             if (!res.ok) {
 
                 throw new Error(
-                    "Department Chart API Error"
+                    "Department Chart API Error: "
+                    + res.status
                 );
-
             }
 
             return res.json();
@@ -458,23 +428,6 @@ function loadDepartmentChart() {
                 "Department Chart Data:",
                 data
             );
-
-
-            let labels = [];
-            let totals = [];
-
-
-            data.forEach(item => {
-
-                labels.push(
-                    item.department
-                );
-
-                totals.push(
-                    Number(item.total)
-                );
-
-            });
 
 
             const canvas =
@@ -490,11 +443,32 @@ function loadDepartmentChart() {
                 );
 
                 return;
-
             }
 
 
-            // DESTROY OLD CHART
+            if (!Array.isArray(data)) {
+
+                console.error(
+                    "Invalid Department Chart Data:",
+                    data
+                );
+
+                return;
+            }
+
+
+            const labels =
+                data.map(
+                    item => item.department
+                );
+
+
+            const totals =
+                data.map(
+                    item => Number(item.total || 0)
+                );
+
+
             if (departmentChart) {
 
                 departmentChart.destroy();
@@ -502,7 +476,6 @@ function loadDepartmentChart() {
             }
 
 
-            // CREATE CHART
             departmentChart =
                 new Chart(
                     canvas,
@@ -524,7 +497,8 @@ function loadDepartmentChart() {
                                     data:
                                         totals,
 
-                                    borderWidth: 1
+                                    borderWidth:
+                                        1
 
                                 }
 
@@ -532,24 +506,12 @@ function loadDepartmentChart() {
 
                         },
 
-
                         options: {
 
                             responsive: true,
 
                             maintainAspectRatio:
                                 false,
-
-                            plugins: {
-
-                                legend: {
-
-                                    display: true
-
-                                }
-
-                            },
-
 
                             scales: {
 
@@ -585,8 +547,6 @@ function loadDepartmentChart() {
         });
 
 }
-
-
 
 // ==========================================
 // LOAD DASHBOARD
