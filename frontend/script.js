@@ -2821,6 +2821,8 @@ function addTeacher() {
                 "teacherShift"
             ).selectedIndex = 0;
 
+               loadTeachers();
+
         }
 
     })
@@ -2906,4 +2908,99 @@ function deleteSelectedStudent() {
         alert("Server error while deleting student");
 
     });
+}
+
+// ==========================================
+// LOAD TEACHER RECORDS
+// ==========================================
+
+function loadTeachers() {
+
+    const table = document.getElementById("teacherTable");
+
+    if (!table) {
+        return;
+    }
+
+    fetch("https://student-management-system-5xwr.onrender.com/teachers")
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Teacher API Error: " + response.status
+                );
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            console.log("Teacher Records:", data);
+
+            // Support different response formats
+            const teachers =
+                Array.isArray(data)
+                    ? data
+                    : data.teachers || data.data || [];
+
+            table.innerHTML = "";
+
+            if (teachers.length === 0) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;">
+                            No Teacher Records Found
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            teachers.forEach(teacher => {
+
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${teacher.id || ""}</td>
+
+                    <td>${teacher.username || ""}</td>
+
+                    <td>${teacher.name || ""}</td>
+
+                    <td>${teacher.department || ""}</td>
+
+                    <td>${teacher.year || ""}</td>
+
+                    <td>${teacher.college_shift || ""}</td>
+                `;
+
+                table.appendChild(row);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Teacher Records Error:",
+                error
+            );
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6"
+                        style="text-align:center;color:red;">
+                        Failed to load teacher records
+                    </td>
+                </tr>
+            `;
+
+        });
+
 }
