@@ -431,6 +431,37 @@ app.get("/teacher-students/:teacherId", (req, res) => {
     });
 });
 
+// ==========================================
+// GET ALL TEACHERS
+// ==========================================
+app.get("/teachers", (req, res) => {
+
+    const sql = `
+        SELECT
+            id,
+            username,
+            name,
+            department,
+            year,
+            college_shift
+        FROM teachers
+        ORDER BY id DESC
+    `;
+
+    db.query(sql, (err, rows) => {
+
+        if (err) {
+            console.error("Get Teachers Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Failed to load teachers"
+            });
+        }
+
+        res.json(rows);
+    });
+});
 
 // Update Student API
 app.put("/students/:id", upload.single("photo"), (req, res) => {
@@ -2889,6 +2920,8 @@ app.use((err, req, res, next) => {
     });
 
 });
+
+
 
 // Server
 const PORT = process.env.PORT || 5000;
