@@ -221,23 +221,17 @@ function loadAttendancePercentage() {
 
 function loadYearWiseStudents() {
 
-    const role =
-        localStorage.getItem("role");
+    const role = localStorage.getItem("role");
+    const teacherId = localStorage.getItem("teacherId");
 
     let apiUrl =
         "https://student-management-system-5xwr.onrender.com/dashboard/year-chart";
 
-
-    // TEACHER
+    // Teacher
     if (role === "teacher") {
 
-        const teacherId =
-            localStorage.getItem("teacherId");
-
         if (!teacherId) {
-
             console.error("Teacher ID not found");
-
             return;
         }
 
@@ -246,124 +240,110 @@ function loadYearWiseStudents() {
             + encodeURIComponent(teacherId);
     }
 
-
     fetch(apiUrl)
+        .then(response => {
 
-        .then(res => {
-
-            if (!res.ok) {
+            if (!response.ok) {
                 throw new Error(
-                    "Year Chart API Error: " + res.status
+                    "Year API Error: " + response.status
                 );
             }
 
-            return res.json();
-
+            return response.json();
         })
 
         .then(data => {
 
-            console.log(
-                "Year Wise API Data:",
-                data
-            );
-
+            console.log("Year Wise API Data:", data);
 
             let firstYear = 0;
             let secondYear = 0;
             let thirdYear = 0;
             let fourthYear = 0;
 
-
             if (!Array.isArray(data)) {
 
                 console.error(
-                    "Invalid Year Chart Data:",
+                    "Invalid Year Wise Data:",
                     data
                 );
 
                 return;
             }
 
-
             data.forEach(item => {
 
-                const year =
-                    String(item.year || "")
-                        .trim();
+                // Convert "3rd year", "3rd Year", " 3RD YEAR "
+                // into one standard format
+                const year = String(item.year || "")
+                    .trim()
+                    .toLowerCase();
 
-                const total =
-                    Number(item.total || 0);
+                const total = Number(item.total || 0);
 
+                console.log(
+                    "Checking Year:",
+                    year,
+                    "Total:",
+                    total
+                );
 
-                if (year === "1st Year") {
+                if (year.includes("1st")) {
 
-                    firstYear = total;
+                    firstYear += total;
 
-                }
+                } else if (year.includes("2nd")) {
 
-                else if (year === "2nd Year") {
+                    secondYear += total;
 
-                    secondYear = total;
+                } else if (year.includes("3rd")) {
 
-                }
+                    thirdYear += total;
 
-                else if (year === "3rd Year") {
+                } else if (year.includes("4th")) {
 
-                    thirdYear = total;
-
-                }
-
-                else if (year === "4th Year") {
-
-                    fourthYear = total;
-
+                    fourthYear += total;
                 }
 
             });
 
-
+            // Display
             document.getElementById(
                 "firstYearCount"
             ).textContent = firstYear;
-
 
             document.getElementById(
                 "secondYearCount"
             ).textContent = secondYear;
 
-
             document.getElementById(
                 "thirdYearCount"
             ).textContent = thirdYear;
-
 
             document.getElementById(
                 "fourthYearCount"
             ).textContent = fourthYear;
 
-
             console.log(
                 "Final Year Wise:",
                 {
-                    firstYear,
-                    secondYear,
-                    thirdYear,
-                    fourthYear
+                    firstYear: firstYear,
+                    secondYear: secondYear,
+                    thirdYear: thirdYear,
+                    fourthYear: fourthYear
                 }
             );
 
         })
 
-        .catch(err => {
+        .catch(error => {
 
             console.error(
                 "Year Wise Error:",
-                err
+                error
             );
 
         });
-
 }
 
 // ==========================================

@@ -2352,13 +2352,13 @@ app.get("/dashboard/chart", (req, res) => {
 
     const sql = `
         SELECT
-            department,
+             TRIM(department) AS department,
             COUNT(DISTINCT id) AS total
         FROM students
         WHERE department IS NOT NULL
-          AND department <> ''
-        GROUP BY department
-        ORDER BY department ASC
+          AND TRIM(department) <> ''
+        GROUP BY TRIM(department)
+        ORDER BY TRIM(department)
     `;
 
     db.query(sql, (err, rows) => {
@@ -2386,13 +2386,13 @@ app.get("/dashboard/year-chart", (req, res) => {
 
     const sql = `
         SELECT
-            year,
+              TRIM(year) AS year,
             COUNT(DISTINCT id) AS total
         FROM students
         WHERE year IS NOT NULL
-          AND year <> ''
-        GROUP BY year
-        ORDER BY CASE year
+          AND TRIM(year) <> ''
+        GROUP BY TRIM(year)
+        ORDER BY CASE TRIM(year)
             WHEN '1st Year' THEN 1
             WHEN '2nd Year' THEN 2
             WHEN '3rd Year' THEN 3
@@ -2417,12 +2417,11 @@ app.get("/dashboard/year-chart", (req, res) => {
 
 });
 
-
 // ==========================================
-// TEACHER - DEPARTMENT WISE STUDENTS
+// TEACHER - YEAR WISE STUDENTS
 // ==========================================
 
-app.get("/dashboard/teacher-chart/:teacherId", (req, res) => {
+app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
 
     const teacherId = req.params.teacherId;
 
@@ -2435,36 +2434,60 @@ app.get("/dashboard/teacher-chart/:teacherId", (req, res) => {
 
     const sql = `
         SELECT
-            s.department,
+            TRIM(s.year) AS year,
             COUNT(DISTINCT s.id) AS total
         FROM students s
 
         INNER JOIN teacher_classes tc
-            ON s.department = tc.department
-            AND s.year = tc.year
-            AND s.college_shift = tc.college_shift
+            ON TRIM(s.department) = TRIM(tc.department)
+            AND TRIM(s.year) = TRIM(tc.year)
+            AND TRIM(s.college_shift) = TRIM(tc.college_shift)
 
         WHERE tc.teacher_id = ?
 
-        GROUP BY s.department
-        ORDER BY s.department ASC
+        GROUP BY TRIM(s.year)
+
+        ORDER BY CASE TRIM(s.year)
+            WHEN '1st Year' THEN 1
+            WHEN '2nd Year' THEN 2
+            WHEN '3rd Year' THEN 3
+            WHEN '4th Year' THEN 4
+            ELSE 5
+        END
     `;
 
     db.query(sql, [teacherId], (err, rows) => {
 
         if (err) {
-            console.error("Teacher Department Chart Error:", err);
+
+            console.error(
+                "Teacher Year Chart Error:",
+                err
+            );
 
             return res.status(500).json({
                 success: false,
                 message: err.sqlMessage || "Database Error"
             });
+
         }
 
+        console.log(
+            "Teacher ID:",
+            teacherId
+        );
+
+        console.log(
+            "Teacher Year Chart:",
+            rows
+        );
+
         res.json(rows);
+
     });
 
 });
+
 
 
 // ==========================================
