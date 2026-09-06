@@ -445,7 +445,7 @@ app.get("/teachers", (req, res) => {
             year,
             college_shift
         FROM teachers
-        ORDER BY id DESC
+        ORDER BY id ASC
     `;
 
     db.query(sql, (err, rows) => {
@@ -728,6 +728,44 @@ app.get("/teacher-attendance/:teacherId", (req, res) => {
             success: true,
             data: rows
         });
+
+    });
+
+});
+
+// ==========================================
+// GET ATTENDANCE RECORDS
+// ==========================================
+app.get("/attendance", (req, res) => {
+
+    const sql = `
+        SELECT
+            a.attendance_id,
+            s.name,
+            s.reg_no,
+            a.attendance_date,
+            a.status
+        FROM attendance a
+        INNER JOIN students s
+            ON a.student_id = s.id
+        ORDER BY a.attendance_id ASC
+    `;
+
+    db.query(sql, (err, rows) => {
+
+        if (err) {
+
+            console.error("Get Attendance Error:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage || "Failed to load attendance records"
+            });
+        }
+
+        console.log("Attendance Records:", rows);
+
+        res.json(rows);
 
     });
 
