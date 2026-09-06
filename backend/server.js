@@ -2440,20 +2440,12 @@ app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
 
         INNER JOIN teacher_classes tc
             ON TRIM(s.department) = TRIM(tc.department)
-            AND TRIM(s.year) = TRIM(tc.year)
+            AND LOWER(TRIM(s.year)) = LOWER(TRIM(tc.year))
             AND TRIM(s.college_shift) = TRIM(tc.college_shift)
 
         WHERE tc.teacher_id = ?
 
         GROUP BY TRIM(s.year)
-
-        ORDER BY CASE TRIM(s.year)
-            WHEN '1st Year' THEN 1
-            WHEN '2nd Year' THEN 2
-            WHEN '3rd Year' THEN 3
-            WHEN '4th Year' THEN 4
-            ELSE 5
-        END
     `;
 
     db.query(sql, [teacherId], (err, rows) => {
@@ -2469,13 +2461,33 @@ app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
                 success: false,
                 message: err.sqlMessage || "Database Error"
             });
-
         }
 
-        console.log(
-            "Teacher ID:",
-            teacherId
-        );
+        // Sort after MySQL returns the grouped data
+        const order = {
+            "1st year": 1,
+            "2nd year": 2,
+            "3rd year": 3,
+            "4th year": 4
+        };
+
+        rows.sort((a, b) => {
+
+            const yearA =
+                String(a.year || "")
+                    .trim()
+                    .toLowerCase();
+
+            const yearB =
+                String(b.year || "")
+                    .trim()
+                    .toLowerCase();
+
+            return (
+                (order[yearA] || 5) -
+                (order[yearB] || 5)
+            );
+        });
 
         console.log(
             "Teacher Year Chart:",
@@ -2484,62 +2496,6 @@ app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
 
         res.json(rows);
 
-    });
-
-});
-
-
-
-// ==========================================
-// TEACHER - YEAR WISE STUDENTS
-// ==========================================
-
-app.get("/dashboard/teacher-year-chart/:teacherId", (req, res) => {
-
-    const teacherId = req.params.teacherId;
-
-    if (!teacherId) {
-        return res.status(400).json({
-            success: false,
-            message: "Teacher ID required"
-        });
-    }
-
-    const sql = `
-        SELECT
-            s.year,
-            COUNT(DISTINCT s.id) AS total
-        FROM students s
-
-        INNER JOIN teacher_classes tc
-            ON s.department = tc.department
-            AND s.year = tc.year
-            AND s.college_shift = tc.college_shift
-
-        WHERE tc.teacher_id = ?
-
-        GROUP BY s.year
-        ORDER BY CASE s.year
-            WHEN '1st Year' THEN 1
-            WHEN '2nd Year' THEN 2
-            WHEN '3rd Year' THEN 3
-            WHEN '4th Year' THEN 4
-            ELSE 5
-        END
-    `;
-
-    db.query(sql, [teacherId], (err, rows) => {
-
-        if (err) {
-            console.error("Teacher Year Chart Error:", err);
-
-            return res.status(500).json({
-                success: false,
-                message: err.sqlMessage || "Database Error"
-            });
-        }
-
-        res.json(rows);
     });
 
 });
