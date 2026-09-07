@@ -730,3 +730,17 @@ nav {
     margin: 5px;
     color: #555;
 }
+
+.student-system-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.student-system-image img {
+    width: 500px;
+    max-width: 90%;
+    height: auto;
+    object-fit: contain;
+}
