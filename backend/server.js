@@ -225,7 +225,45 @@ app.post("/login", (req, res) => {
 
 });
 
+// ==========================================
+// GET FIRST AVAILABLE STUDENT ID
+// ==========================================
+function getNextStudentId(callback) {
+
+    const sql = `
+        SELECT
+            CASE
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM students WHERE id = 1
+                )
+                THEN 1
+                ELSE COALESCE(
+                    (
+                        SELECT MIN(s1.id + 1)
+                        FROM students s1
+                        LEFT JOIN students s2
+                            ON s2.id = s1.id + 1
+                        WHERE s2.id IS NULL
+                    ),
+                    1
+                )
+            END AS next_id
+    `;
+
+    db.query(sql, (err, result) => {
+
+        if (err) {
+            console.error("Student ID Error:", err);
+            return callback(err);
+        }
+
+        callback(null, result[0].next_id);
+    });
+}
+
+// ==========================================
 // ADD STUDENT
+// ==========================================
 app.post("/students", upload.single("photo"), (req, res) => {
 
     const {
@@ -249,70 +287,86 @@ app.post("/students", upload.single("photo"), (req, res) => {
     // Cloudinary URL
     const photo = req.file ? req.file.path : "";
 
-    const sql = `
-        INSERT INTO students
-        (
-            name,
-            reg_no,
-            gender,
-            dob,
-            blood_group,
-            department,
-            year,
-            phone,
-            email,
-            address,
-            parent_name,
-            parent_phone,
-            batch,
-            college_shift,
-            admission_date,
-            photo
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    // Get deleted / first available ID
+    getNextStudentId((idErr, nextId) => {
 
-    db.query(
-        sql,
-        [
-            name,
-            regno,
-            gender,
-            dob,
-            bloodgroup,
-            department,
-            year,
-            phone,
-            email,
-            address,
-            parentname,
-            parentphone,
-            batch,
-            college_shift,
-            admission_date,
-            photo
-        ],
-        (err, result) => {
-
-            if (err) {
-
-                console.error("Add Student DB Error:", err);
-
-                return res.status(500).json({
-                    success: false,
-                    message: err.sqlMessage || "Database error"
-                });
-            }
-
-            return res.json({
-                success: true,
-                message: "Student Saved Successfully",
-                id: result.insertId,
-                photo: photo
+        if (idErr) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to generate Student ID"
             });
         }
-    );
+
+        const sql = `
+            INSERT INTO students
+            (
+                id,
+                name,
+                reg_no,
+                gender,
+                dob,
+                blood_group,
+                department,
+                year,
+                phone,
+                email,
+                address,
+                parent_name,
+                parent_phone,
+                batch,
+                college_shift,
+                admission_date,
+                photo
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(
+            sql,
+            [
+                nextId,
+                name,
+                regno,
+                gender,
+                dob,
+                bloodgroup,
+                department,
+                year,
+                phone,
+                email,
+                address,
+                parentname,
+                parentphone,
+                batch,
+                college_shift,
+                admission_date,
+                photo
+            ],
+            (err, result) => {
+
+                if (err) {
+
+                    console.error("Add Student DB Error:", err);
+
+                    return res.status(500).json({
+                        success: false,
+                        message: err.sqlMessage || "Database error"
+                    });
+                }
+
+                return res.json({
+                    success: true,
+                    message: "Student Saved Successfully",
+                    id: nextId,
+                    photo: photo
+                });
+            }
+        );
+
+    });
+
 });
+    
 // Get Students API
 app.get("/students", (req, res) => {
 
@@ -2691,6 +2745,7 @@ app.post("/student-register", (req, res) => {
     });
 
 });
+
 // ==========================================
 // DASHBOARD STATISTICS
 // ==========================================
@@ -2958,8 +3013,6 @@ app.use((err, req, res, next) => {
     });
 
 });
-
-
 
 // Server
 const PORT = process.env.PORT || 5000;
