@@ -1285,7 +1285,7 @@ app.get("/fees", (req, res) => {
         FROM fees f
         JOIN students s
         ON f.student_id = s.id
-        ORDER BY f.fee_id DESC
+        ORDER BY f.fee_id ASC
     `;
 
     db.query(sql, (err, result) => {
@@ -1527,7 +1527,7 @@ app.get("/reports/attendance", (req, res) => {
     FROM attendance a
     JOIN students s
     ON a.student_id = s.id
-    ORDER BY a.attendance_date DESC
+    ORDER BY a.attendance_date ASC
     `;
 
     db.query(sql, (err, result) => {
@@ -1556,7 +1556,7 @@ app.get("/reports/marks", (req, res) => {
     FROM marks m
     JOIN students s
     ON m.student_id = s.id
-    ORDER BY m.mark_id DESC
+    ORDER BY m.mark_id ASC
     `;
 
     db.query(sql, (err, result) => {
@@ -1585,7 +1585,7 @@ app.get("/reports/fees", (req, res) => {
     FROM fees f
     JOIN students s
     ON f.student_id = s.id
-    ORDER BY f.fee_id DESC
+    ORDER BY f.fee_id ASC
     `;
 
     db.query(sql, (err, result) => {
