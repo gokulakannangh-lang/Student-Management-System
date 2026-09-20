@@ -1143,6 +1143,9 @@ app.delete("/marks/:id", (req, res) => {
 // ADMIN + TEACHER
 // ==========================================
 
+// ==========================================
+// DELETE STUDENT
+// ==========================================
 app.delete("/students/:id", (req, res) => {
 
     const id = req.params.id;
@@ -1163,47 +1166,124 @@ app.delete("/students/:id", (req, res) => {
 
     }
 
-    const sql = `
-        DELETE FROM students
-        WHERE id = ?
-    `;
+    // ==========================================
+    // 1. DELETE FEES
+    // ==========================================
+    db.query(
+        "DELETE FROM fees WHERE student_id = ?",
+        [id],
+        (feesErr) => {
 
-    db.query(sql, [id], (err, result) => {
+            if (feesErr) {
 
-        if (err) {
+                console.error("Delete Fees Error:", feesErr);
 
-            console.error(
-                "Delete Student Error:",
-                err
+                return res.status(500).json({
+                    success: false,
+                    message: feesErr.sqlMessage || "Failed to delete fees"
+                });
+
+            }
+
+            // ==========================================
+            // 2. DELETE MARKS
+            // ==========================================
+            db.query(
+                "DELETE FROM marks WHERE student_id = ?",
+                [id],
+                (marksErr) => {
+
+                    if (marksErr) {
+
+                        console.error("Delete Marks Error:", marksErr);
+
+                        return res.status(500).json({
+                            success: false,
+                            message: marksErr.sqlMessage || "Failed to delete marks"
+                        });
+
+                    }
+
+                    // ==========================================
+                    // 3. DELETE ATTENDANCE
+                    // ==========================================
+                    db.query(
+                        "DELETE FROM attendance WHERE student_id = ?",
+                        [id],
+                        (attendanceErr) => {
+
+                            if (attendanceErr) {
+
+                                console.error(
+                                    "Delete Attendance Error:",
+                                    attendanceErr
+                                );
+
+                                return res.status(500).json({
+                                    success: false,
+                                    message:
+                                        attendanceErr.sqlMessage ||
+                                        "Failed to delete attendance"
+                                });
+
+                            }
+
+                            // ==========================================
+                            // 4. DELETE STUDENT
+                            // ==========================================
+                            db.query(
+                                "DELETE FROM students WHERE id = ?",
+                                [id],
+                                (studentErr, result) => {
+
+                                    if (studentErr) {
+
+                                        console.error(
+                                            "Delete Student Error:",
+                                            studentErr
+                                        );
+
+                                        return res.status(500).json({
+                                            success: false,
+                                            message:
+                                                studentErr.sqlMessage ||
+                                                "Database Error"
+                                        });
+
+                                    }
+
+                                    if (result.affectedRows === 0) {
+
+                                        return res.status(404).json({
+                                            success: false,
+                                            message: "Student not found"
+                                        });
+
+                                    }
+
+                                    console.log(
+                                        "Student and related records deleted:",
+                                        id
+                                    );
+
+                                    res.json({
+                                        success: true,
+                                        message:
+                                            "Student and related records deleted successfully",
+                                        deletedStudentId: id
+                                    });
+
+                                }
+                            );
+
+                        }
+                    );
+
+                }
             );
 
-            return res.status(500).json({
-                success: false,
-                message: err.sqlMessage || "Database Error"
-            });
-
         }
-
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                success: false,
-                message: "Student not found"
-            });
-
-        }
-
-        console.log(
-            "Student Deleted Successfully:",
-            id
-        );
-
-        res.json({
-            success: true,
-            message: "Student Deleted Successfully"
-        });
-
-    });
+    );
 
 });
 
