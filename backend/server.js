@@ -1215,7 +1215,7 @@ app.delete("/students/:id", (req, res) => {
                             if (attendanceErr) {
 
                                 console.error(
-                                    "Delete Attendance Error:",
+                              "Delete Attendance Error:",
                                     attendanceErr
                                 );
 
