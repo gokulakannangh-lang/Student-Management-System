@@ -715,6 +715,18 @@ td img:hover {
 .id-card h2 {
     color: #1d4ed8;
     margin-bottom: 10px;
+    font-size: 17px;
+    line-height: 1.45;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.id-card h2 span {
+    display: block;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* =========================
