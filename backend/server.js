@@ -1024,63 +1024,143 @@ app.put("/subjects/:id", (req, res) => {
 
 });
 
-//Marks
-app.post("/marks",(req,res)=>{
+// ==========================================
+// GET FIRST AVAILABLE MARK ID
+// ==========================================
+function getNextMarkId(callback) {
 
-const {
-student_id,
-paper_code,
-subject,
-internal_marks,
-external_marks,
-semester
-}=req.body;
+    const sql = `
+        SELECT
+            CASE
+                WHEN NOT EXISTS (
+                    SELECT 1
+                    FROM marks
+                    WHERE mark_id = 1
+                )
+                THEN 1
+                ELSE COALESCE(
+                    (
+                        SELECT MIN(m1.mark_id + 1)
+                        FROM marks m1
+                        LEFT JOIN marks m2
+                            ON m2.mark_id = m1.mark_id + 1
+                        WHERE m2.mark_id IS NULL
+                    ),
+                    1
+                )
+            END AS next_id
+    `;
 
-const total=
-Number(internal_marks)+Number(external_marks);
+    db.query(sql, (err, result) => {
 
-let grade="F";
+        if (err) {
+            console.error("Mark ID Error:", err);
+            return callback(err);
+        }
 
-if(total>=90) grade="O";
-else if(total>=80) grade="A+";
-else if(total>=70) grade="A";
-else if(total>=60) grade="B+";
-else if(total>=50) grade="B";
-else if(total>=40) grade="C";
-
-const sql=`
-INSERT INTO marks
-(student_id, paper_code, subject, internal_marks,
-external_marks, total, grade, semester)
-VALUES (?,?,?,?,?,?,?,?)
-`;
-
-db.query(sql,
-[
-student_id,
-paper_code,
-subject,
-internal_marks,
-external_marks,
-total,
-grade,
-semester
-],
-(err)=>{
-
-if(err){
-return res.status(500).json({
-message:err.sqlMessage
-});
+        callback(null, result[0].next_id);
+    });
 }
- //saveLog("Admin", "Marks Added");
-res.json({
-message:"Marks Saved Successfully"
-});
+
+// ==========================================
+// ADD MARKS
+// ==========================================
+app.post("/marks", (req, res) => {
+
+    const {
+        student_id,
+        paper_code,
+        subject,
+        internal_marks,
+        external_marks,
+        semester
+    } = req.body;
+
+    const total =
+        Number(internal_marks) + Number(external_marks);
+
+    let grade = "F";
+
+    if (total >= 90) grade = "O";
+    else if (total >= 80) grade = "A+";
+    else if (total >= 70) grade = "A";
+    else if (total >= 60) grade = "B+";
+    else if (total >= 50) grade = "B";
+    else if (total >= 40) grade = "C";
+
+
+    // Get first available Mark ID
+    getNextMarkId((idErr, nextId) => {
+
+        if (idErr) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to generate Mark ID"
+            });
+        }
+
+
+        const sql = `
+            INSERT INTO marks
+            (
+                mark_id,
+                student_id,
+                paper_code,
+                subject,
+                internal_marks,
+                external_marks,
+                total,
+                grade,
+                semester
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+
+        db.query(
+            sql,
+            [
+                nextId,
+                student_id,
+                paper_code,
+                subject,
+                internal_marks,
+                external_marks,
+                total,
+                grade,
+                semester
+            ],
+            (err) => {
+
+                if (err) {
+
+                    console.error(
+                        "Add Marks Error:",
+                        err
+                    );
+
+                    return res.status(500).json({
+                        success: false,
+                        message:
+                            err.sqlMessage ||
+                            "Database error"
+                    });
+                }
+
+
+                res.json({
+                    success: true,
+                    message: "Marks Saved Successfully",
+                    mark_id: nextId
+                });
+
+            }
+        );
+
+    });
 
 });
 
-});
 // Update Marks
 app.put("/marks/:id", (req, res) => {
 
