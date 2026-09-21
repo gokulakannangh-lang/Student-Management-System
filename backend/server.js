@@ -621,7 +621,47 @@ app.put("/students/:id/photo", upload.single("photo"), (req, res) => {
 
 });
 
-// Save Attendance API
+// ==========================================
+// GET FIRST AVAILABLE ATTENDANCE ID
+// ==========================================
+function getNextAttendanceId(callback) {
+
+    const sql = `
+        SELECT
+            CASE
+                WHEN NOT EXISTS (
+                    SELECT 1
+                    FROM attendance
+                    WHERE attendance_id = 1
+                )
+                THEN 1
+                ELSE COALESCE(
+                    (
+                        SELECT MIN(a1.attendance_id + 1)
+                        FROM attendance a1
+                        LEFT JOIN attendance a2
+                            ON a2.attendance_id = a1.attendance_id + 1
+                        WHERE a2.attendance_id IS NULL
+                    ),
+                    1
+                )
+            END AS next_id
+    `;
+
+    db.query(sql, (err, result) => {
+
+        if (err) {
+            console.error("Attendance ID Error:", err);
+            return callback(err);
+        }
+
+        callback(null, result[0].next_id);
+    });
+}
+
+// ==========================================
+// ADD ATTENDANCE
+// ==========================================
 app.post("/attendance", (req, res) => {
 
     const {
@@ -630,44 +670,70 @@ app.post("/attendance", (req, res) => {
         status
     } = req.body;
 
-    const sql = `
-        INSERT INTO attendance
-        (student_id, attendance_date, status)
-        VALUES (?, ?, ?)
-    `;
+    // Get first available Attendance ID
+    getNextAttendanceId((idErr, nextId) => {
 
-    db.query(
-        sql,
-        [student_id, attendance_date, status],
-        (err, result) => {
+        if (idErr) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to generate Attendance ID"
+            });
+        }
 
-            if (err) {
+        const sql = `
+            INSERT INTO attendance
+            (
+                attendance_id,
+                student_id,
+                attendance_date,
+                status
+            )
+            VALUES (?, ?, ?, ?)
+        `;
+
+        db.query(
+            sql,
+            [
+                nextId,
+                student_id,
+                attendance_date,
+                status
+            ],
+            (err, result) => {
+
+                if (err) {
+
+                    console.error(
+                        "Add Attendance Error:",
+                        err
+                    );
+
+                    return res.status(500).json({
+                        success: false,
+                        message:
+                            err.sqlMessage ||
+                            "Database error"
+                    });
+                }
 
                 console.log(
-                    "Attendance Save Error:",
-                    err
+                    "Attendance Saved. ID:",
+                    nextId
                 );
 
-                return res.status(500).json({
-                    success: false,
-                    message: "Attendance Save Failed"
+                res.json({
+                    success: true,
+                    message: "Attendance Saved Successfully",
+                    attendance_id: nextId
                 });
+
             }
+        );
 
-            console.log(
-                "Attendance Saved:",
-                result.insertId
-            );
-
-            res.json({
-                success: true,
-                message: "Attendance Saved Successfully"
-            });
-
-        }
-    );
+    });
 
 });
+
 // Update Attendance
 app.put("/attendance/:id", (req, res) => {
 
