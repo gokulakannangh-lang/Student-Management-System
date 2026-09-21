@@ -2230,9 +2230,9 @@ app.get("/dashboard/summary", (req, res) => {
                 summary.students = r1[0].total;
 
 
-                // DEPARTMENTS
-                db.query(
-                    "SELECT COUNT(DISTINCT department) AS total FROM students",
+        // DEPARTMENTS
+        db.query(
+            "SELECT COUNT(DISTINCT department) AS total FROM students",
                     (err, r2) => {
 
                         if (err) {
@@ -2242,7 +2242,7 @@ app.get("/dashboard/summary", (req, res) => {
                         summary.departments = r2[0].total;
 
 
-                        // FEES PAID
+        // FEES PAID
                         db.query(
                             "SELECT COUNT(*) AS total FROM fees WHERE status='Paid'",
                             (err, r3) => {
@@ -2254,7 +2254,7 @@ app.get("/dashboard/summary", (req, res) => {
                                 summary.paid = r3[0].total;
 
 
-                                // FEES PENDING
+        // FEES PENDING
                                 db.query(
                                     "SELECT COUNT(*) AS total FROM fees WHERE status='Pending'",
                                     (err, r4) => {
@@ -2266,7 +2266,7 @@ app.get("/dashboard/summary", (req, res) => {
                                         summary.pending = r4[0].total;
 
 
-                                        // PRESENT
+        // PRESENT
                                         db.query(
                                             "SELECT COUNT(*) AS total FROM attendance WHERE status='Present'",
                                             (err, r5) => {
@@ -2278,10 +2278,10 @@ app.get("/dashboard/summary", (req, res) => {
                                                 summary.present = r5[0].total;
 
 
-                                                // MARKS RECORDS
+         // MARKS RECORDS
                                                 db.query(
-                                                    "SELECT COUNT(*) AS total FROM marks",
-                                                    (err, r6) => {
+                                                "SELECT COUNT(DISTINCT student_id) AS total FROM marks",
+                                                        (err, r6) => {
 
                                                         if (err) {
                                                             return res.status(500).json(err);
@@ -2290,9 +2290,9 @@ app.get("/dashboard/summary", (req, res) => {
                                                         summary.marks =
                                                             r6[0].total;
 
-                                                        // Keep pass also
+        // Keep pass also
                                                         db.query(
-                                                            "SELECT COUNT(*) AS total FROM marks WHERE grade <> 'F'",
+                                                            "SELECT COUNT(DISTINCT student_id) AS total FROM marks WHERE grade <> 'F'",
                                                             (err, r7) => {
 
                                                                 if (err) {
@@ -2520,7 +2520,7 @@ app.get("/dashboard/summary", (req, res) => {
 
                                             db.query(
                                                 `
-                                                SELECT COUNT(*) AS total
+                                                SELECT COUNT(DISTINCT m.student_id) AS total
                                                 FROM marks m
                                                 WHERE EXISTS (
                                                     SELECT 1
@@ -2554,7 +2554,7 @@ app.get("/dashboard/summary", (req, res) => {
 
                                                     db.query(
                                                         `
-                                                        SELECT COUNT(*) AS total
+                                                        SELECT COUNT(DISTINCT m.student_id) AS total
                                                         FROM marks m
                                                         WHERE m.grade <> 'F'
                                                         AND EXISTS (
