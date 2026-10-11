@@ -1259,6 +1259,56 @@ app.get("/marks", (req, res) => {
     });
 
 });
+
+// ==========================================
+// GET RESULTS BY SEMESTER
+// ==========================================
+app.get("/student-results/:semester", (req, res) => {
+
+    const semester = req.params.semester;
+
+    const sql = `
+        SELECT
+            s.id AS student_id,
+            s.name,
+            s.reg_no,
+            s.department,
+            m.mark_id,
+            m.paper_code,
+            m.semester,
+            m.subject,
+            m.internal_marks,
+            m.external_marks,
+            m.total,
+            m.grade
+        FROM students s
+        INNER JOIN marks m
+            ON s.id = m.student_id
+        WHERE m.semester = ?
+        ORDER BY s.name, m.paper_code
+    `;
+
+    db.query(sql, [semester], (err, result) => {
+
+        if (err) {
+
+            console.error(
+                "Student Result Error:",
+                err
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: err.sqlMessage
+            });
+        }
+
+        res.json(result);
+
+    });
+
+});
+
 // Delete Marks
 app.delete("/marks/:id", (req, res) => {
 
