@@ -168,7 +168,7 @@
     // Load college details from the backend
     async function loadAbout() {
         try {
-            const response = await fetch("http://localhost:5000/about");
+            const response = await fetch("https://student-management-system-5xwr.onrender.com/about");
 
             if (!response.ok) {
                 throw new Error("Unable to load college details.");
