@@ -1,42 +1,270 @@
-<h1>About</h1>
 
-<label>College Name</label>
-<input type="text" id="college_name">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About College</title>
+    <link rel="stylesheet" href="style.css">
 
-<br><br>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 20px;
+            transition: 0.3s;
+        }
 
-<label>College Logo</label>
+        .about-container {
+            max-width: 700px;
+            margin: 20px auto;
+        }
 
-<input type="file" id="logo">
+        .about-card {
+            background: white;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000015;
+        }
 
-<button onclick="uploadLogo()">
-    Upload Logo
-</button>
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
 
-<br><br>
+        input, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
 
-<img id="logoPreview"
-     src=""
-     width="120"
-     height="120"
-     style="border:1px solid black;">
+        input[readonly], textarea[readonly] {
+            background: #f8fafc;
+            color: #334155;
+        }
 
-<br><br>
+        button, .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 11px 17px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-<label>Address</label>
-<textarea id="college_address"></textarea>
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
 
-<label>Phone</label>
-<input type="text" id="college_phone">
+        #logoPreview {
+            display: block;
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
 
-<label>Email</label>
-<input type="email" id="college_email">
+        body.dark-mode {
+            background: #0f172a;
+            color: #f8fafc;
+        }
 
-<label>Principal Name</label>
-<input type="text" id="principal_name">
+        body.dark-mode .about-card {
+            background: #1e293b;
+        }
 
-<br><br>
+        body.dark-mode input,
+        body.dark-mode textarea {
+            background: #334155;
+            color: white;
+        }
 
-<button onclick="saveSettings()">
-    Save
-</button>
+        body.dark-mode input[readonly],
+        body.dark-mode textarea[readonly] {
+            background: #334155;
+            color: #f8fafc;
+        }
+
+        .status {
+            margin-top: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="about-container">
+
+    <h1>About College</h1>
+    <a href="index.html" class="back-btn">← Back to Dashboard</a>
+
+    <section class="about-card">
+        <h2>🏫 College Details</h2>
+
+        <label for="college_name">College Name</label>
+        <input id="college_name" type="text" readonly>
+
+        <label for="college_address">Address</label>
+        <textarea id="college_address" rows="3" readonly></textarea>
+
+        <label for="college_phone">Phone</label>
+        <input id="college_phone" type="text" readonly>
+
+        <label for="college_email">Website</label>
+        <input id="college_email" type="text" readonly>
+
+        <label for="principal_name">Principal Name</label>
+        <input id="principal_name" type="text" readonly>
+
+        <p id="detailsMessage" class="status" role="status">
+            Loading college details...
+        </p>
+    </section>
+
+    <section class="about-card">
+        <h2>🖼️ College Logo</h2>
+
+        <img id="logoPreview"
+             src=""
+             alt="College Logo"
+             hidden>
+
+        <p id="logoMessage">
+            Logo upload is available to the authorized Admin only.
+        </p>
+
+        <input type="file"
+               id="logo"
+               accept="image/png,image/jpeg,image/webp">
+
+        <button id="uploadLogo" type="button">
+            Upload Logo
+        </button>
+    </section>
+
+    <section class="about-card">
+        <h2>🎨 Appearance</h2>
+        <p>Change your dashboard theme.</p>
+        <button type="button" id="themeToggle">
+            Enable Dark Mode
+        </button>
+    </section>
+
+</div>
+
+<script>
+    const $ = id => document.getElementById(id);
+
+    // Load college details from the backend
+    async function loadAbout() {
+        try {
+            const response = await fetch("http://localhost:5000/about");
+
+            if (!response.ok) {
+                throw new Error("Unable to load college details.");
+            }
+
+            const details = await response.json();
+
+            $("college_name").value =
+                details.college_name || "";
+
+            $("college_address").value =
+                details.college_address || "";
+
+            $("college_phone").value =
+                details.college_phone || "";
+
+            $("college_email").value =
+                details.college_email || "";
+
+            $("principal_name").value =
+                details.principal_name || "";
+
+            $("detailsMessage").textContent =
+                "College details loaded successfully.";
+
+        } catch (error) {
+            $("detailsMessage").textContent =
+                "Could not load college details. Check the backend server.";
+            console.error(error);
+        }
+    }
+
+    // Light / Dark Mode
+    function applyTheme(theme) {
+        document.body.classList.toggle(
+            "dark-mode",
+            theme === "dark"
+        );
+
+        $("themeToggle").textContent =
+            theme === "dark"
+                ? "Enable Light Mode"
+                : "Enable Dark Mode";
+    }
+
+    applyTheme(localStorage.getItem("smsTheme") || "light");
+
+    $("themeToggle").addEventListener("click", function () {
+        const theme = document.body.classList.contains("dark-mode")
+            ? "light"
+            : "dark";
+
+        localStorage.setItem("smsTheme", theme);
+        applyTheme(theme);
+    });
+
+    // Logo upload stays disabled until Admin authentication
+    // and backend authorization are connected.
+
+    // Select and preview college logo
+$("logo").addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        alert("PNG, JPG, or WEBP image only.");
+        this.value = "";
+        return;
+    }
+
+    if (file.size > 1024 * 1024) {
+        alert("Logo size must be less than 1 MB.");
+        this.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        $("logoPreview").src = reader.result;
+        $("logoPreview").hidden = false;
+        $("logoMessage").textContent =
+            "Logo selected. Preview only; not saved yet.";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+    loadAbout();
+</script>
+</body>
+</html>

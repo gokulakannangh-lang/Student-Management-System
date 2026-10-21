@@ -2084,10 +2084,10 @@ app.get("/student-results/:semester", (req, res) => {
     });
 
 });
-//get setting
-app.get("/settings", (req, res) => {
+//get about
+app.get("/about", (req, res) => {
 
-    db.query("SELECT * FROM settings LIMIT 1", (err, result) => {
+    db.query("SELECT * FROM settings  LIMIT 1", (err, result) => {
 
         if (err) return res.json(err);
 
@@ -2096,8 +2096,8 @@ app.get("/settings", (req, res) => {
     });
 
 });
-//put setting
-app.put("/settings", (req, res) => {
+//put about
+app.put("/about", (req, res) => {
 
     const {
         college_name,
@@ -2108,7 +2108,7 @@ app.put("/settings", (req, res) => {
     } = req.body;
 
     const sql = `
-    UPDATE settings
+    UPDATE about
     SET
     college_name=?,
     college_address=?,
@@ -2128,7 +2128,7 @@ app.put("/settings", (req, res) => {
         if (err) return res.json(err);
 
         res.json({
-            message: "Settings Updated Successfully"
+            message: "About Updated Successfully"
         });
 
     });
