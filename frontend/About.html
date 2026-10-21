@@ -176,6 +176,8 @@
              "https://student-management-system-5xwr.onrender.com/about"
         );
 
+        console.log("API response status:", response.status);
+
         if (!response.ok) {
             throw new Error("HTTP error: " + response.status);
         }
