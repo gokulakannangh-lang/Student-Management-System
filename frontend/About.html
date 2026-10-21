@@ -166,40 +166,36 @@
     const $ = id => document.getElementById(id);
 
     // Load college details from the backend
-    async function loadAbout() {
-        try {
-            const response = await fetch("https://student-management-system-5xwr.onrender.com/about");
+    
+  async function loadAbout() {
+    const message = $("detailsMessage");
+    message.textContent = "Loading college details...";
 
-            if (!response.ok) {
-                throw new Error("Unable to load college details.");
-            }
+    try {
+        const response = await fetch(
+            "https://student-management-system-5xwr.onrender.com/about"
+        );
 
-            const details = await response.json();
-
-            $("college_name").value =
-                details.college_name || "";
-
-            $("college_address").value =
-                details.college_address || "";
-
-            $("college_phone").value =
-                details.college_phone || "";
-
-            $("college_email").value =
-                details.college_email || "";
-
-            $("principal_name").value =
-                details.principal_name || "";
-
-            $("detailsMessage").textContent =
-                "College details loaded successfully.";
-
-        } catch (error) {
-            $("detailsMessage").textContent =
-                "Could not load college details. Check the backend server.";
-            console.error(error);
+        if (!response.ok) {
+            throw new Error("HTTP error: " + response.status);
         }
+
+        const details = await response.json();
+
+        $("college_name").value = details.college_name ?? "";
+        $("college_address").value = details.college_address ?? "";
+        $("college_phone").value = details.college_phone ?? "";
+        $("college_email").value = details.college_email ?? "";
+        $("principal_name").value = details.principal_name ?? "";
+
+        message.textContent = "College details loaded successfully.";
+    } catch (error) {
+        console.error("About page error:", error);
+        message.textContent =
+            "Failed to load details: " + error.message;
     }
+}
+
 
     // Light / Dark Mode
     function applyTheme(theme) {
