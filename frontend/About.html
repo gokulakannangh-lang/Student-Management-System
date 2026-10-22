@@ -1,9 +1,10 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>About College</title>
     <link rel="stylesheet" href="style.css">
 
@@ -60,18 +61,19 @@
             cursor: pointer;
         }
 
-        button:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
         #logoPreview {
             display: block;
-            width: 120px;
-            height: 120px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            margin: 15px auto;
+        }
+
+        .college-logo {
+            text-align: center;
+        }
+
+        .status {
             margin-top: 12px;
         }
 
@@ -95,20 +97,22 @@
             background: #334155;
             color: #f8fafc;
         }
-
-        .status {
-            margin-top: 12px;
-        }
     </style>
 </head>
 
 <body>
+
 <div class="about-container">
 
     <h1>About College</h1>
-    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
 
+    <a href="index.html" class="back-btn">
+        ← Back to Dashboard
+    </a>
+
+    <!-- College Details -->
     <section class="about-card">
+
         <h2>🏫 College Details</h2>
 
         <label for="college_name">College Name</label>
@@ -126,32 +130,38 @@
         <label for="principal_name">Principal Name</label>
         <input id="principal_name" type="text" readonly>
 
-      <p id="detailsMessage" class="status" role="status">
+        <p id="detailsMessage" class="status" role="status">
             Loading college details...
         </p>
 
     </section>
 
+    <!-- College Logo -->
     <section class="about-card">
+
         <h2>🖼️ College Logo</h2>
 
-          <div class="college-logo">
-    <img
-        id="logoPreview"
-        src="https://res.cloudinary.com/dbarxd2bg/image/upload/v1792638247/logo_pd2qll.png"
-        alt="College Logo"
-        style="width:150px; height:150px; object-fit:contain;"
-    >
-         </div>
-        
+        <div class="college-logo">
+            <img
+                id="logoPreview"
+                src="https://res.cloudinary.com/dbarxd2bg/image/upload/v1792638247/logo_pd2qll.png"
+                alt="College Logo"
+            >
+        </div>
+
     </section>
 
+    <!-- Appearance -->
     <section class="about-card">
+
         <h2>🎨 Appearance</h2>
+
         <p>Change your dashboard theme.</p>
+
         <button type="button" id="themeToggle">
             Enable Dark Mode
         </button>
+
     </section>
 
 </div>
@@ -159,42 +169,53 @@
 <script>
     const $ = id => document.getElementById(id);
 
-    // Load college details from the backend
-    
-  async function loadAbout() {
-    const message = $("detailsMessage");
-    message.textContent = "Loading college details...";
+    // Load college details from backend
+    async function loadAbout() {
 
-    try {
-        const response = await fetch(
-             "https://student-management-system-5xwr.onrender.com/about"
-        );
+        const message = $("detailsMessage");
 
-        console.log("API response status:", response.status);
+        message.textContent = "Loading college details...";
 
-        if (!response.ok) {
-            throw new Error("HTTP error: " + response.status);
+        try {
+            const response = await fetch(
+                "https://student-management-system-5xwr.onrender.com/about"
+            );
+
+            if (!response.ok) {
+                throw new Error("HTTP error: " + response.status);
+            }
+
+            const details = await response.json();
+
+            $("college_name").value =
+                details.college_name ?? "";
+
+            $("college_address").value =
+                details.college_address ?? "";
+
+            $("college_phone").value =
+                details.college_phone ?? "";
+
+            $("college_email").value =
+                details.college_email ?? "";
+
+            $("principal_name").value =
+                details.principal_name ?? "";
+
+            message.textContent =
+                "College details loaded successfully.";
+
+        } catch (error) {
+            console.error("About page error:", error);
+
+            message.textContent =
+                "Failed to load college details. Check your internet or backend connection.";
         }
-
-        const details = await response.json();
-
-        $("college_name").value = details.college_name ?? "";
-        $("college_address").value = details.college_address ?? "";
-        $("college_phone").value = details.college_phone ?? "";
-        $("college_email").value = details.college_email ?? "";
-        $("principal_name").value = details.principal_name ?? "";
-
-        message.textContent = "College details loaded successfully.";
-    } catch (error) {
-        console.error("About page error:", error);
-        message.textContent =
-            "Failed to load details: " + error.message;
     }
-}
-
 
     // Light / Dark Mode
     function applyTheme(theme) {
+
         document.body.classList.toggle(
             "dark-mode",
             theme === "dark"
@@ -209,54 +230,21 @@
     applyTheme(localStorage.getItem("smsTheme") || "light");
 
     $("themeToggle").addEventListener("click", function () {
-        const theme = document.body.classList.contains("dark-mode")
-            ? "light"
-            : "dark";
+
+        const theme =
+            document.body.classList.contains("dark-mode")
+                ? "light"
+                : "dark";
 
         localStorage.setItem("smsTheme", theme);
+
         applyTheme(theme);
     });
 
-    // Logo upload stays disabled until Admin authentication
-    // and backend authorization are connected.
-
-    // Select and preview college logo
-$("logo").addEventListener("change", function () {
-    const file = this.files[0];
-
-    if (!file) return;
-
-    const allowedTypes = [
-        "image/png",
-        "image/jpeg",
-        "image/webp"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        alert("PNG, JPG, or WEBP image only.");
-        this.value = "";
-        return;
-    }
-
-    if (file.size > 1024 * 1024) {
-        alert("Logo size must be less than 1 MB.");
-        this.value = "";
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function () {
-        $("logoPreview").src = reader.result;
-        $("logoPreview").hidden = false;
-        $("logoMessage").textContent =
-            "Logo selected. Preview only; not saved yet.";
-    };
-
-    reader.readAsDataURL(file);
-});
-
+    // Start loading
     loadAbout();
 </script>
+
 </body>
 </html>
+```
